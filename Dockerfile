@@ -1,15 +1,7 @@
-FROM node:22
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY app.jar app.jar
 
-RUN npm install
-
-COPY . .
-
-ENV PORT=7643
-
-EXPOSE 7643
-
-CMD [ "npm", "start" ]
+CMD ["java", "-jar", "app.jar"]
