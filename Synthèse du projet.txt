@@ -1,0 +1,21 @@
+Synthèse du projet : Gestion de chantiers
+Contexte et objectif
+Nous développons une application de bureau en Java destinée à la gestion de chantiers. L'objectif de cette première phase était de concevoir l'interface et les fonctionnalités de l'application avant sa réalisation.
+
+Travail réalisé :
+Cahier des charges : définit le périmètre et deux rôles distincts : le « chef de département » (qui supervise l'ensemble des projets et leurs responsables) et le « chef de projet » (qui assure la gestion opérationnelle sur le terrain).
+Cas d'utilisation : 20 cas d'utilisation ont été identifiés, incluant un acteur abstrait commun pour les actions partagées par les deux rôles.
+Diagramme de classes : le modèle intègre les entités issues du cahier des charges : utilisateurs, chantiers, tâches, employés, suivi des présences, matériaux, stocks et engins.
+Diagrammes de séquence : cinq flux principaux ont été modélisés (connexion, suivi des présences, gestion des engins et des stocks).
+Architecture : l'application repose sur trois couches : JavaFX pour l'interface graphique ; une couche de services pour la logique métier et la gestion des droits d'accès (définissant les rôles et privilèges des utilisateurs) ; et une couche DAO (Data Access Object) utilisant JDBC pour interagir avec une base de données PostgreSQL.
+Maquettes : cinq visuels ont été créés, couvrant les écrans suivants : connexion, tableau de bord, liste des projets, détails d'un projet et suivi des présences.
+
+Principaux choix de conception
+Définition de deux rôles, avec des droits d'accès contrôlés au niveau de la couche de services.
+Suivi des stocks avec traçabilité de chaque mouvement.
+Impossibilité d'affecter des engins en cours de maintenance ou en panne.
+Enregistrement unique de présence par employé, par chantier et par jour.
+Utilisation de technologies libres et open source (Java, JavaFX, PostgreSQL), choisies notamment pour limiter les coûts.
+
+Travail restant à effectuer
+Finaliser les maquettes et concevoir les écrans manquants (tâches, stocks, engins, employés, documents, rapports, utilisateurs).
