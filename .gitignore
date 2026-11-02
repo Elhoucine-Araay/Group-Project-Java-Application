@@ -1,0 +1,13 @@
+target/
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+nbproject/
+*.log
+.DS_Store
+Thumbs.db
+# Local DB credentials
+db.properties
