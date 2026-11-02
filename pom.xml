@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.school</groupId>
+    <groupId>com.FSA</groupId>
     <artifactId>school-project</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -18,7 +18,7 @@
         <javafx.version>21.0.5</javafx.version>
         <mysql.version>8.4.0</mysql.version>
         <junit.version>5.10.2</junit.version>
-        <main.class>com.school.project.MainApp</main.class>
+        <main.class>com.FSA.Chantier</main.class>
     </properties>
 
     <dependencies>
