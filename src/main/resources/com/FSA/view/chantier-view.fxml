@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.FSA.controller.ChantierController"
+            stylesheets="@../css/app.css">
+    <top>
+        <VBox spacing="4" styleClass="page-header">
+            <Label text="Gestion des chantiers" styleClass="page-title" />
+            <Label text="Ajouter, consulter, modifier et supprimer les chantiers" styleClass="page-subtitle" />
+        </VBox>
+    </top>
+    <center>
+        <VBox spacing="14">
+            <padding><Insets top="18" right="22" bottom="18" left="22" /></padding>
+            <Label text="Liste des chantiers" styleClass="section-title" />
+            <TableView fx:id="chantierTable" VBox.vgrow="ALWAYS" prefHeight="280">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="55" />
+                    <TableColumn fx:id="nomColumn" text="Nom" prefWidth="160" />
+                    <TableColumn fx:id="adresseColumn" text="Adresse" prefWidth="190" />
+                    <TableColumn fx:id="statutColumn" text="Statut" prefWidth="110" />
+                    <TableColumn fx:id="avancementColumn" text="Avancement (%)" prefWidth="120" />
+                </columns>
+            </TableView>
+            <Separator />
+            <Label text="Informations du chantier" styleClass="section-title" />
+            <GridPane hgap="12" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="120" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                    <ColumnConstraints minWidth="120" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                </columnConstraints>
+                <Label text="Nom" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                <TextField fx:id="nomField" promptText="Nom du chantier" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                <Label text="Adresse" GridPane.rowIndex="0" GridPane.columnIndex="2" />
+                <TextField fx:id="adresseField" promptText="Adresse" GridPane.rowIndex="0" GridPane.columnIndex="3" />
+                <Label text="Date de début" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                <DatePicker fx:id="dateDebutPicker" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                <Label text="Fin prévue" GridPane.rowIndex="1" GridPane.columnIndex="2" />
+                <DatePicker fx:id="dateFinPicker" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="3" />
+                <Label text="Statut" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                <TextField fx:id="statutField" promptText="En cours / Terminé..." GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                <Label text="Avancement (%)" GridPane.rowIndex="2" GridPane.columnIndex="2" />
+                <TextField fx:id="avancementField" promptText="0 à 100" GridPane.rowIndex="2" GridPane.columnIndex="3" />
+                <Label text="ID chef département" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+                <TextField fx:id="chefDepartementIdField" promptText="ID" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+                <Label text="ID chef projet" GridPane.rowIndex="3" GridPane.columnIndex="2" />
+                <TextField fx:id="chefProjetIdField" promptText="ID" GridPane.rowIndex="3" GridPane.columnIndex="3" />
+            </GridPane>
+            <HBox spacing="10">
+                <Button text="Ajouter" onAction="#handleAdd" styleClass="primary-button" />
+                <Button fx:id="updateButton" text="Modifier" onAction="#handleUpdate" disable="true" />
+                <Button fx:id="deleteButton" text="Supprimer" onAction="#handleDelete" disable="true" styleClass="danger-button" />
+                <Button text="Vider" onAction="#handleClear" />
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>
