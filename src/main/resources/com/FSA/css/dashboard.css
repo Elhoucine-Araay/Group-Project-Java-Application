@@ -1,0 +1,425 @@
+/* Everything is in em, so it scales with the root font size (set in DashboardController). */
+
+/* ================= PAGE (light) ================= */
+.root-pane {
+    -fx-background-color: white;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+}
+
+.main {
+    /* left padding = 5em (icon rail) + 2.4em */
+    -fx-padding: 2.4em 3em 0 7.4em;
+}
+
+.header { -fx-spacing: 0.9em; }
+
+.page-title {
+    -fx-text-fill: #111827;
+    -fx-font-size: 1.9em;
+    -fx-font-weight: bold;
+}
+
+.page-subtitle {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 1.05em;
+}
+
+/* ----- Add Project button (top right) ----- */
+.add-btn {
+    -fx-background-color: linear-gradient(to right, #2fd0cc, #3f8fb0);
+    -fx-background-radius: 999;
+    -fx-text-fill: white;
+    -fx-font-size: 1.05em;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 0.5em;
+    -fx-padding: 0.65em 1.4em 0.65em 1.2em;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(47, 208, 204, 0.35), 14, 0.1, 0, 4);
+}
+
+.add-btn:hover {
+    -fx-effect: dropshadow(gaussian, rgba(47, 208, 204, 0.6), 18, 0.15, 0, 5);
+}
+
+.icon-plus {
+    -fx-min-width: 1.2em;  -fx-pref-width: 1.2em;  -fx-max-width: 1.2em;
+    -fx-min-height: 1.2em; -fx-pref-height: 1.2em; -fx-max-height: 1.2em;
+    -fx-background-color: white;
+    -fx-shape: "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z";
+    -fx-scale-shape: true;
+}
+
+.columns {
+    -fx-spacing: 3em;
+    -fx-padding: 3.2em 0 0 0;
+}
+
+.column {
+    -fx-background-color: #f4f6fa;
+    -fx-border-color: #e2e6ee;
+    -fx-border-width: 1;
+    -fx-padding: 0.6em 0.6em 0 0.6em;
+    -fx-spacing: 0.9em;
+}
+
+.column-header { -fx-spacing: 0.5em; }
+
+.column-title {
+    -fx-text-fill: #111827;
+    -fx-font-size: 1.15em;
+    -fx-font-weight: bold;
+}
+
+.count-badge {
+    -fx-background-color: #111827;
+    -fx-background-radius: 100;
+    -fx-min-width: 1.5em;
+    -fx-min-height: 1.5em;
+    -fx-alignment: CENTER;
+    -fx-text-fill: white;
+    -fx-font-size: 0.85em;
+    -fx-font-weight: bold;
+}
+
+/* transparent scroll area */
+.col-scroll,
+.col-scroll > .viewport,
+.col-scroll .scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.col-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 0.5em;
+}
+
+.col-scroll .scroll-bar .thumb {
+    -fx-background-color: rgba(17, 24, 39, 0.2);
+    -fx-background-radius: 100;
+}
+
+.col-scroll .scroll-bar .track,
+.col-scroll .scroll-bar .increment-button,
+.col-scroll .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.cards {
+    -fx-spacing: 1.3em;
+    -fx-padding: 0 0 1.5em 0;
+    -fx-background-color: transparent;
+}
+
+/* ================= PROJECT CARDS ================= */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 1.4em;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 1.4em;
+    -fx-effect: dropshadow(gaussian, rgba(17, 24, 39, 0.12), 14, 0.1, 0, 4);
+}
+
+/* Photos: paths are relative to this css file. Put the images in the images folder. */
+.card-img {
+    -fx-min-height: 7em;
+    -fx-pref-height: 7em;
+    -fx-padding: 0.6em;
+    -fx-background-color: #cbd2e1;
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+}
+/*
+.img-warehouse { -fx-background-image: url("../images/warehouse.jpg"); }
+.img-villa     { -fx-background-image: url("../images/villa-lux.jpg"); }
+.img-porsche   { -fx-background-image: url("../images/porsche.jpg"); }
+.img-marjane   { -fx-background-image: url("../images/marjane.jpg"); }
+.img-faculty   { -fx-background-image: url("../images/faculty.jpg"); }
+*/
+.tag {
+    -fx-background-color: white;
+    -fx-background-radius: 0.4em;
+    -fx-padding: 0.05em 0.6em 0.05em 0.6em;
+    -fx-font-size: 0.7em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #222;
+}
+
+.card-body {
+    -fx-padding: 0.7em 0.9em 0.7em 0.9em;
+    -fx-spacing: 0.3em;
+    -fx-min-height: 8.5em;
+}
+
+.card-title {
+    -fx-font-size: 1.3em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1d2433;
+}
+
+.meta {
+    -fx-spacing: 0.4em;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.meta-text {
+    -fx-font-size: 0.7em;
+    -fx-text-fill: #8a8fa0;
+}
+
+.icon-pin, .icon-cal {
+    -fx-min-width: 0.95em;  -fx-pref-width: 0.95em;  -fx-max-width: 0.95em;
+    -fx-min-height: 0.95em; -fx-pref-height: 0.95em; -fx-max-height: 0.95em;
+    -fx-background-color: #111111;
+    -fx-scale-shape: true;
+}
+
+.icon-pin {
+    -fx-shape: "M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z";
+}
+
+.icon-cal {
+    -fx-shape: "M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V9h14v11z";
+}
+
+.card-footer { -fx-padding: 0.3em 0 0 0; }
+
+.owner {
+    -fx-font-size: 0.65em;
+    -fx-text-fill: #8a8fa0;
+}
+
+.members {
+    -fx-background-color: #f1f3f9;
+    -fx-background-radius: 0.6em;
+    -fx-padding: 0.2em 0.7em 0.2em 0.7em;
+    -fx-font-size: 0.7em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1d2433;
+}
+
+/* ================= SIDEBAR (dark, like the reference) ================= */
+/* Icon rail = 5em. Items are 3.4em wide in the rail (0.8em side padding),
+   icons are 1.4em, so the icon centre sits at 2.5em, the middle of the rail. */
+.sidebar {
+    -fx-background-color: #1e1f24;
+}
+
+.sidebar-content {
+    -fx-background-color: #1e1f24;
+    -fx-padding: 1.2em 0.8em 1.2em 0.8em;
+    -fx-spacing: 0.35em;
+}
+
+/* ----- profile (top) ----- */
+.profile {
+    -fx-padding: 0 0 0.9em 0.4em;
+    -fx-spacing: 0.8em;
+}
+
+.avatar {
+    -fx-min-width: 2.6em;  -fx-pref-width: 2.6em;  -fx-max-width: 2.6em;
+    -fx-min-height: 2.6em; -fx-pref-height: 2.6em; -fx-max-height: 2.6em;
+    -fx-background-color: #6d5df6;
+    -fx-background-radius: 0.7em;
+}
+
+.avatar-text {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 1em;
+}
+
+.profile-text { -fx-spacing: 0.1em; }
+
+.profile-name {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 1em;
+    -fx-text-overrun: CLIP;
+}
+
+.profile-email {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 0.75em;
+    -fx-text-overrun: CLIP;
+}
+
+/* round icon-only buttons (settings) */
+.icon-btn {
+    -fx-background-color: transparent;
+    -fx-padding: 0.4em;
+    -fx-cursor: hand;
+}
+
+.icon-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 100;
+}
+
+.icon-gear {
+    -fx-min-width: 1.5em;  -fx-pref-width: 1.5em;  -fx-max-width: 1.5em;
+    -fx-min-height: 1.5em; -fx-pref-height: 1.5em; -fx-max-height: 1.5em;
+    -fx-background-color: #9ca3af;
+    -fx-shape: "M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z";
+    -fx-scale-shape: true;
+}
+
+.icon-btn:hover .icon-gear { -fx-background-color: white; }
+
+/* ----- nav items (buttons) and rows (search, theme) share one look ----- */
+.nav-item,
+.nav-row {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0.8em;
+    -fx-padding: 0.8em 1em 0.8em 1em;
+    -fx-cursor: hand;
+}
+
+.nav-item {
+    -fx-alignment: CENTER_LEFT;
+    -fx-graphic-text-gap: 0.8em;
+    -fx-text-fill: #e5e7eb;
+    -fx-font-size: 1em;
+    -fx-text-overrun: CLIP;
+}
+
+.nav-row {
+    -fx-spacing: 0.8em;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.nav-item:hover,
+.nav-row:hover {
+    -fx-background-color: #2b2d34;
+}
+
+.nav-active,
+.nav-active:hover {
+    -fx-background-color: #34363f;
+    -fx-text-fill: white;
+}
+
+.nav-label {
+    -fx-text-fill: #e5e7eb;
+    -fx-text-overrun: CLIP;
+}
+
+/* icons */
+.nav-icon {
+    -fx-min-width: 1.4em;  -fx-pref-width: 1.4em;  -fx-max-width: 1.4em;
+    -fx-min-height: 1.4em; -fx-pref-height: 1.4em; -fx-max-height: 1.4em;
+    -fx-background-color: #aeb3bf;
+    -fx-scale-shape: true;
+}
+
+.nav-item:hover .nav-icon,
+.nav-row:hover .nav-icon,
+.nav-active .nav-icon {
+    -fx-background-color: white;
+}
+
+.icon-search {
+    -fx-shape: "M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z";
+}
+.icon-home {
+    -fx-shape: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z";
+}
+.icon-folder {
+    -fx-shape: "M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z";
+}
+.icon-bell {
+    -fx-shape: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z";
+}
+.icon-chart {
+    -fx-shape: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z";
+}
+.icon-people {
+    -fx-shape: "M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z";
+}
+.icon-logout {
+    -fx-shape: "M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z";
+}
+.icon-moon {
+    -fx-shape: "M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z";
+}
+
+/* search field */
+.search-row {
+    -fx-background-color: #2b2d34;
+}
+
+.search-input,
+.search-input:focused {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-text-fill: #e5e7eb;
+    -fx-prompt-text-fill: #9ca3af;
+    -fx-font-size: 1em;
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: transparent;
+}
+
+.sidebar-sep {
+    -fx-min-height: 1;  -fx-pref-height: 1;  -fx-max-height: 1;
+    -fx-background-color: #34363f;
+    -fx-background-insets: 0 0.4em 0 0.4em;
+}
+
+/* theme switch */
+.switch-track {
+    -fx-min-width: 2.4em;  -fx-pref-width: 2.4em;  -fx-max-width: 2.4em;
+    -fx-min-height: 1.3em; -fx-pref-height: 1.3em; -fx-max-height: 1.3em;
+    -fx-background-color: #4b4e58;
+    -fx-background-radius: 100;
+    -fx-padding: 0 0.15em 0 0.15em;
+}
+
+.switch-thumb {
+    -fx-min-width: 1em;  -fx-pref-width: 1em;  -fx-max-width: 1em;
+    -fx-min-height: 1em; -fx-pref-height: 1em; -fx-max-height: 1em;
+    -fx-background-color: white;
+    -fx-background-radius: 100;
+}
+
+.switch-track:on {
+    -fx-background-color: #6d5df6;
+}
+
+.switch-track:on .switch-thumb {
+    -fx-translate-x: 1.1em;
+}
+
+/* ================= DARK MODE (switch in the sidebar) ================= */
+.root-pane.dark {
+    -fx-background-color: #1a2236;
+}
+
+.dark .page-title { -fx-text-fill: white; }
+.dark .page-subtitle { -fx-text-fill: #d3d9e6; }
+
+.dark .column {
+    -fx-background-color: #25324a;
+    -fx-border-color: #3b4a63;
+}
+
+.dark .column-title { -fx-text-fill: white; }
+
+.dark .count-badge {
+    -fx-background-color: white;
+    -fx-text-fill: #1a2236;
+}
+
+.dark .col-scroll .scroll-bar .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.25);
+}
+
+.dark .card {
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 14, 0.1, 0, 4);
+}

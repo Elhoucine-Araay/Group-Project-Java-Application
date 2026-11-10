@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.FSA.DashboardController" fx:id="root"
+           prefWidth="1280.0" prefHeight="720.0"
+           styleClass="root-pane" stylesheets="@../css/dashboard.css">
+
+   <!-- ============ MAIN AREA (has left padding = width of the icon rail) ============ -->
+   <VBox styleClass="main" minWidth="0.0">
+
+      <HBox styleClass="header" alignment="CENTER_LEFT">
+         <VBox>
+            <Label text="Projects" styleClass="page-title"/>
+            <Label text="Track progress, budgets on all projects." styleClass="page-subtitle"/>
+         </VBox>
+         <Region HBox.hgrow="ALWAYS"/>
+         <Button fx:id="addProjectButton" text="Add Project" styleClass="add-btn">
+            <graphic><Region styleClass="icon-plus"/></graphic>
+         </Button>
+      </HBox>
+
+      <HBox styleClass="columns" VBox.vgrow="ALWAYS">
+
+         <!-- ===== Scheduled ===== -->
+         <VBox styleClass="column" HBox.hgrow="ALWAYS" minWidth="0.0">
+            <HBox styleClass="column-header" alignment="CENTER_LEFT">
+               <Label text="Scheduled Projects" styleClass="column-title"/>
+               <Label fx:id="scheduledCount" text="0" styleClass="count-badge"/>
+            </HBox>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="col-scroll" VBox.vgrow="ALWAYS">
+               <content>
+                  <VBox fx:id="scheduledCards" styleClass="cards"/>
+               </content>
+            </ScrollPane>
+         </VBox>
+
+         <!-- ===== Active ===== -->
+         <VBox styleClass="column" HBox.hgrow="ALWAYS" minWidth="0.0">
+            <HBox styleClass="column-header" alignment="CENTER_LEFT">
+               <Label text="Active Projects" styleClass="column-title"/>
+               <Label fx:id="activeCount" text="0" styleClass="count-badge"/>
+            </HBox>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="col-scroll" VBox.vgrow="ALWAYS">
+               <content>
+                  <VBox fx:id="activeCards" styleClass="cards"/>
+               </content>
+            </ScrollPane>
+         </VBox>
+
+         <!-- ===== Completed ===== -->
+         <VBox styleClass="column" HBox.hgrow="ALWAYS" minWidth="0.0">
+            <HBox styleClass="column-header" alignment="CENTER_LEFT">
+               <Label text="Completed Projects" styleClass="column-title"/>
+               <Label fx:id="completedCount" text="0" styleClass="count-badge"/>
+            </HBox>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="col-scroll" VBox.vgrow="ALWAYS">
+               <content>
+                  <VBox fx:id="completedCards" styleClass="cards"/>
+               </content>
+            </ScrollPane>
+         </VBox>
+
+      </HBox>
+   </VBox>
+
+   <!-- ============ SIDEBAR: icon rail that expands over the page on hover ============ -->
+   <StackPane fx:id="sidebar" styleClass="sidebar" alignment="TOP_LEFT" StackPane.alignment="TOP_LEFT">
+      <VBox fx:id="sidebarContent" styleClass="sidebar-content">
+
+         <!-- Profile (top) + settings button -->
+         <HBox styleClass="profile" alignment="CENTER_LEFT">
+            <StackPane styleClass="avatar">
+               <Label text="AA" styleClass="avatar-text"/>
+            </StackPane>
+            <VBox styleClass="profile-text" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" minWidth="0.0">
+               <Label text="Abdelghafour Agdz" styleClass="profile-name"/>
+               <Label text="Abdelghafour.Adgz@csm.com" styleClass="profile-email"/>
+            </VBox>
+            <Button fx:id="settingsButton" styleClass="icon-btn" minWidth="0.0">
+               <graphic><Region styleClass="icon-gear"/></graphic>
+            </Button>
+         </HBox>
+
+         <!-- Search
+         <HBox fx:id="searchRow" styleClass="nav-row, search-row" alignment="CENTER_LEFT">
+            <Region styleClass="nav-icon, icon-search"/>
+            <TextField fx:id="searchField" promptText="Search..." styleClass="search-input"
+                       HBox.hgrow="ALWAYS" minWidth="0.0"/>
+         </HBox>
+         -->
+         <!-- Navigation -->
+         <Button fx:id="dashboardButton" text="Dashboard" maxWidth="Infinity" minWidth="0.0"
+                 styleClass="nav-item, nav-active">
+            <graphic><Region styleClass="nav-icon, icon-home"/></graphic>
+         </Button>
+
+         <Button fx:id="projectsButton" text="Projects" maxWidth="Infinity" minWidth="0.0"
+                 styleClass="nav-item">
+            <graphic><Region styleClass="nav-icon, icon-folder"/></graphic>
+         </Button>
+
+         <Button fx:id="notificationsButton" text="Notifications" maxWidth="Infinity" minWidth="0.0"
+                 styleClass="nav-item">
+            <graphic><Region styleClass="nav-icon, icon-bell"/></graphic>
+         </Button>
+
+         <Button fx:id="reportsButton" text="Reports" maxWidth="Infinity" minWidth="0.0"
+                 styleClass="nav-item">
+            <graphic><Region styleClass="nav-icon, icon-chart"/></graphic>
+         </Button>
+
+         <Button fx:id="teamButton" text="Team" maxWidth="Infinity" minWidth="0.0"
+                 styleClass="nav-item">
+            <graphic><Region styleClass="nav-icon, icon-people"/></graphic>
+         </Button>
+
+         <Region VBox.vgrow="ALWAYS"/>
+
+         <!-- Bottom -->
+         <Region styleClass="sidebar-sep"/>
+
+         <Button fx:id="logoutButton" text="Logout" maxWidth="Infinity" minWidth="0.0"
+                 styleClass="nav-item">
+            <graphic><Region styleClass="nav-icon, icon-logout"/></graphic>
+         </Button>
+
+         <HBox fx:id="themeRow" styleClass="nav-row, theme-row" alignment="CENTER_LEFT">
+            <Region styleClass="nav-icon, icon-moon"/>
+            <Label text="Dark Mode" styleClass="nav-label"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <StackPane fx:id="themeSwitch" styleClass="switch-track" alignment="CENTER_LEFT">
+               <Region styleClass="switch-thumb"/>
+            </StackPane>
+         </HBox>
+
+      </VBox>
+   </StackPane>
+
+</StackPane>
