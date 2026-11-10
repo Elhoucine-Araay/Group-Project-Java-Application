@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.FSA.LoginController"
+          fx:id="root" prefWidth="940.0" prefHeight="535.0"
+          styleClass="root-pane" stylesheets="@../css/login.css">
+
+   <columnConstraints>
+      <ColumnConstraints percentWidth="30.0" hgrow="ALWAYS" minWidth="0.0"/>
+      <ColumnConstraints percentWidth="70.0" hgrow="ALWAYS" minWidth="0.0"/>
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints percentHeight="100.0" vgrow="ALWAYS" minHeight="0.0"/>
+   </rowConstraints>
+
+   <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="hero" minWidth="0.0">
+      <Region styleClass="hero-overlay"/>
+
+      <VBox styleClass="hero-content">
+         <VBox alignment="CENTER" styleClass="hero-head">
+            <Label text="WELCOME" styleClass="hero-title"/>
+            <Label text="Let's work for the best" styleClass="hero-subtitle"/>
+         </VBox>
+
+         <Region VBox.vgrow="ALWAYS"/>
+
+         <VBox styleClass="hero-card">
+            <Label text="BUILDING TODAY, SHAPING TOMORROW." styleClass="hero-card-title" wrapText="true"/>
+            <Label wrapText="true" styleClass="hero-card-text"
+                   text="Every project starts with a vision. Together, we turn plans into progress, challenges into achievements, and hard work into lasting structures. One team, one goal, one strong foundation."/>
+            <Separator styleClass="hero-separator"/>
+            <Label text="“Great things are built when people work together.”"
+                   wrapText="true" styleClass="hero-quote"/>
+         </VBox>
+      </VBox>
+   </StackPane>
+
+
+   <StackPane GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="panel" minWidth="0.0">
+
+
+      <ImageView fitHeight="150.0" preserveRatio="true" smooth="true" StackPane.alignment="TOP_LEFT">
+         <image>
+            <Image url="@../images/logo.png" requestedHeight="1600.0"
+                   preserveRatio="true" smooth="true"/>
+         </image>
+         <StackPane.margin><Insets top="8.0" left="10.0"/></StackPane.margin>
+      </ImageView>
+
+
+      <VBox alignment="CENTER" styleClass="center-box" StackPane.alignment="CENTER">
+
+         <StackPane styleClass="avatar">
+            <Region styleClass="avatar-icon"/>
+         </StackPane>
+
+         <Label text="Welcome Back!" styleClass="title"/>
+         <Label text="Sign in to manage your construction sites" styleClass="subtitle"/>
+
+         <VBox styleClass="form">
+            <HBox alignment="CENTER_LEFT" styleClass="field">
+               <Region styleClass="icon-mail"/>
+               <TextField fx:id="emailField" promptText="Email Address"
+                          HBox.hgrow="ALWAYS" styleClass="field-input"/>
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" styleClass="field">
+               <Region styleClass="icon-lock"/>
+               <PasswordField fx:id="passwordField" promptText="Password"
+                              HBox.hgrow="ALWAYS" styleClass="field-input"/>
+            </HBox>
+
+            <HBox alignment="CENTER_RIGHT">
+               <Hyperlink fx:id="forgotLink" text="Forgot password?" styleClass="forgot"/>
+            </HBox>
+
+            <Button fx:id="signInButton" text="Sign In" maxWidth="Infinity"
+                    defaultButton="true" styleClass="sign-in"/>
+         </VBox>
+      </VBox>
+
+      <Label text="Construction Site Management · Secure Access" styleClass="footer"
+             StackPane.alignment="BOTTOM_CENTER"/>
+   </StackPane>
+
+</GridPane>

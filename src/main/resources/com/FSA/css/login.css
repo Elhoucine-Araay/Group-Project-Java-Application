@@ -1,0 +1,178 @@
+.root-pane {
+    -fx-background-color: white;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+}
+
+
+.hero {
+    -fx-background-color: #565d8f;
+    -fx-background-image: url("../images/main.png");
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+}
+
+.hero-overlay {
+    -fx-background-color: linear-gradient(to bottom, rgba(86, 93, 143, 0.86), rgba(60, 66, 120, 0.92));
+}
+
+.hero-content {
+    -fx-padding: 7em 1.1em 1.8em 1.1em;
+}
+
+.hero-head {
+    -fx-spacing: 0.3em;
+}
+
+.hero-title {
+    -fx-font-size: 4em;
+    -fx-font-weight: 800;
+    -fx-text-fill: #2aa5a5;
+}
+
+.hero-subtitle {
+    -fx-font-size: 1.3em;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.hero-card {
+    -fx-background-color: rgba(255, 255, 255, 0.14);
+    -fx-background-radius: 1.1em;
+    -fx-padding: 1em 1em 0.8em 1em;
+    -fx-spacing: 0.4em;
+}
+
+.hero-card-title {
+    -fx-font-size: 0.85em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f7a21b;
+}
+
+.hero-card-text {
+    -fx-font-size: 0.85em;
+    -fx-text-fill: white;
+}
+
+.hero-separator .line {
+    -fx-border-color: rgba(255, 255, 255, 0.35);
+    -fx-border-width: 1.5 0 0 0;
+}
+
+.hero-quote {
+    -fx-font-size: 0.8em;
+    -fx-font-style: italic;
+    -fx-text-fill: rgba(255, 255, 255, 0.75);
+}
+
+/* ---------- Right panel ---------- */
+.panel {
+    -fx-background-color: white;
+}
+
+.center-box {
+    -fx-max-width: 32em;
+    -fx-padding: 0 2em 0 2em;
+}
+
+.avatar {
+    -fx-min-width: 7em;  -fx-pref-width: 7em;  -fx-max-width: 7em;
+    -fx-min-height: 7em; -fx-pref-height: 7em; -fx-max-height: 7em;
+    -fx-background-color: #565d8f;
+    -fx-background-radius: 100;
+    -fx-effect: dropshadow(gaussian, rgba(86, 93, 143, 0.45), 22, 0.1, 0, 8);
+}
+
+.avatar-icon {
+    -fx-min-width: 3.4em;  -fx-pref-width: 3.4em;  -fx-max-width: 3.4em;
+    -fx-min-height: 3.4em; -fx-pref-height: 3.4em; -fx-max-height: 3.4em;
+    -fx-background-color: white;
+    -fx-shape: "M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z";
+    -fx-scale-shape: true;
+}
+
+.title {
+    -fx-font-size: 1.8em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #4a5385;
+    -fx-padding: 1.3em 0 0 0;
+}
+
+.subtitle {
+    -fx-font-size: 1em;
+    -fx-text-fill: #8a8fa0;
+    -fx-padding: 0.6em 0 0 0;
+}
+
+.form {
+    -fx-spacing: 1.4em;
+    -fx-padding: 3.8em 0 0 0;
+    -fx-fill-width: true;
+}
+
+.field {
+    -fx-spacing: 0.6em;
+    -fx-border-color: transparent transparent #cfd2dc transparent;
+    -fx-border-width: 0 0 1.5 0;
+    -fx-padding: 0.3em 0 0.3em 0;
+}
+
+.field:focus-within {
+    -fx-border-color: transparent transparent #2fd0cc transparent;
+}
+
+.icon-mail, .icon-lock {
+    -fx-min-width: 1.3em;  -fx-pref-width: 1.3em;  -fx-max-width: 1.3em;
+    -fx-min-height: 1.3em; -fx-pref-height: 1.3em; -fx-max-height: 1.3em;
+    -fx-background-color: #777777;
+    -fx-scale-shape: true;
+}
+
+.icon-mail {
+    -fx-shape: "M3 5h18a1 1 0 0 1 1 1v.5l-10 6.5L2 6.5V6a1 1 0 0 1 1-1zm19 3.9V18a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8.9l10 6.5z";
+}
+
+.icon-lock {
+    -fx-shape: "M17 9V7a5 5 0 0 0-10 0v2H5v12h14V9zm-8-2a3 3 0 0 1 6 0v2H9z";
+}
+
+.field-input,
+.field-input:focused {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0.15em 0 0.15em 0;
+    -fx-font-size: 1.05em;
+    -fx-text-fill: #333333;
+    -fx-prompt-text-fill: #9a9ca8;
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: transparent;
+}
+
+.forgot {
+    -fx-font-size: 0.8em;
+    -fx-text-fill: #2a55b8;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.sign-in {
+    -fx-background-color: linear-gradient(to right, #2fd0cc, #565d8f);
+    -fx-background-radius: 999;
+    -fx-text-fill: white;
+    -fx-font-size: 1.35em;
+    -fx-padding: 0.6em 0 0.6em 0;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(86, 93, 143, 0.3), 16, 0.1, 0, 6);
+}
+
+.sign-in:hover {
+    -fx-effect: dropshadow(gaussian, rgba(86, 93, 143, 0.45), 20, 0.15, 0, 8);
+}
+
+.footer {
+    -fx-font-size: 0.8em;
+    -fx-text-fill: #a0a3b0;
+    -fx-padding: 0 0 1.6em 0;
+}
