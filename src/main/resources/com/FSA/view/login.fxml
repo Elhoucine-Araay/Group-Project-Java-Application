@@ -87,7 +87,9 @@
                <PasswordField fx:id="passwordField" promptText="Password"
                               HBox.hgrow="ALWAYS" styleClass="field-input"/>
             </HBox>
-
+            <!-- NEW: the error message, hidden until there is an error -->
+            <Label fx:id="errorLabel" styleClass="error-label"
+                   wrapText="true" visible="false" managed="false"/>
             <HBox alignment="CENTER_RIGHT">
                <Hyperlink fx:id="forgotLink" text="Forgot password?" styleClass="forgot"/>
             </HBox>

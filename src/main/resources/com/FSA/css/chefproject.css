@@ -1,0 +1,254 @@
+/* Styles for the Dashboard (home) page cards.
+   The sidebar, page colours and dark mode come from dashboard.css, which is loaded first.
+   Everything is in em so it scales with the window. */
+
+.dash-grid {
+    -fx-hgap: 1.6em;
+    -fx-vgap: 1.6em;
+    -fx-padding: 1.6em 0 1.6em 0;
+}
+
+/* ================= CARD ================= */
+.dash-card {
+    -fx-background-color: #edf1f9;
+    -fx-background-radius: 1.2em;
+    -fx-border-color: #c3cde2;
+    -fx-border-radius: 1.2em;
+    -fx-border-width: 1;
+    -fx-padding: 1em 1.1em 0.8em 1.1em;
+    -fx-spacing: 0.4em;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(17, 24, 39, 0.08), 12, 0.1, 0, 3);
+}
+
+.dash-card-title {
+    -fx-text-fill: #111827;
+    -fx-font-size: 1.1em;
+    -fx-font-weight: bold;
+}
+.dash-card:hover {
+    -fx-background-color: #f6f8fd;
+    -fx-border-color: #6d5df6;
+    -fx-border-width: 1.5;
+    -fx-translate-y: -0.2em;            /* moves the box up a little */
+    -fx-effect: dropshadow(gaussian, rgba(109, 93, 246, 0.30), 18, 0.15, 0, 6);
+}
+/* ================= LIST ROWS ================= */
+.data-row {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 0.8em;
+    -fx-padding: 0.55em 0 0.55em 0;
+}
+
+.row-line {
+    -fx-border-color: transparent transparent #cfd7e6 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.row-name {
+    -fx-text-fill: #111827;
+    -fx-font-size: 0.95em;
+    -fx-font-weight: bold;
+}
+
+.avatar-sm {
+    -fx-min-width: 2em;  -fx-pref-width: 2em;  -fx-max-width: 2em;
+    -fx-min-height: 2em; -fx-pref-height: 2em; -fx-max-height: 2em;
+    -fx-background-color: #565d8f;
+    -fx-background-radius: 100;
+}
+
+.avatar-sm-icon {
+    -fx-min-width: 1.1em;  -fx-pref-width: 1.1em;  -fx-max-width: 1.1em;
+    -fx-min-height: 1.1em; -fx-pref-height: 1.1em; -fx-max-height: 1.1em;
+    -fx-background-color: white;
+    -fx-shape: "M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z";
+    -fx-scale-shape: true;
+}
+
+.icon-wrench {
+    -fx-min-width: 1.5em;  -fx-pref-width: 1.5em;  -fx-max-width: 1.5em;
+    -fx-min-height: 1.5em; -fx-pref-height: 1.5em; -fx-max-height: 1.5em;
+    -fx-background-color: #f59e0b;
+    -fx-shape: "M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z";
+    -fx-scale-shape: true;
+}
+
+.icon-chevron {
+    -fx-min-width: 1.1em;  -fx-pref-width: 1.1em;  -fx-max-width: 1.1em;
+    -fx-min-height: 1.1em; -fx-pref-height: 1.1em; -fx-max-height: 1.1em;
+    -fx-background-color: #9ca3af;
+    -fx-shape: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z";
+    -fx-scale-shape: true;
+}
+
+/* ----- status: coloured dot + text ----- */
+.status-box {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 0.5em;
+    -fx-min-width: 6.5em;  -fx-pref-width: 6.5em;  -fx-max-width: 6.5em;
+}
+
+.status-text {
+    -fx-text-fill: #111827;
+    -fx-font-size: 0.8em;
+    -fx-font-weight: bold;
+}
+
+.dot, .pill-dot {
+    -fx-min-width: 0.7em;  -fx-pref-width: 0.7em;  -fx-max-width: 0.7em;
+    -fx-min-height: 0.7em; -fx-pref-height: 0.7em; -fx-max-height: 0.7em;
+    -fx-background-radius: 100;
+}
+
+.dot-present, .dot-operational { -fx-background-color: #22c55e; }
+.dot-absent,  .dot-broken      { -fx-background-color: #f43f5e; }
+.dot-late                      { -fx-background-color: #facc15; }
+.dot-maintenance               { -fx-background-color: #f59e0b; }
+.dot-idle                      { -fx-background-color: #6b7280; }
+
+/* ================= PROGRESS BARS ================= */
+.bar-track {
+    -fx-min-height: 0.45em; -fx-pref-height: 0.45em; -fx-max-height: 0.45em;
+    -fx-background-color: #cbd3e4;
+    -fx-background-radius: 100;
+}
+
+.bar-track.bar-lg {
+    -fx-min-height: 0.8em; -fx-pref-height: 0.8em; -fx-max-height: 0.8em;
+}
+
+.bar-fill {
+    -fx-background-radius: 100;
+}
+
+.bar-cement { -fx-background-color: #4caf50; }
+.bar-sand   { -fx-background-color: #c9c21b; }
+.bar-steel  { -fx-background-color: #9fb0c7; }
+.bar-brick  { -fx-background-color: #e07a6b; }
+.bar-budget { -fx-background-color: #2dd4a7; }
+
+/* ================= MATERIALS ================= */
+.material-row {
+    -fx-spacing: 0.4em;
+    -fx-padding: 0.7em 0 0.7em 0;
+}
+
+.material-name {
+    -fx-text-fill: #111827;
+    -fx-font-size: 1.1em;
+    -fx-font-weight: bold;
+}
+
+.muted {
+    -fx-text-fill: #5b6475;
+    -fx-font-size: 0.75em;
+}
+
+/* ================= BUDGET ================= */
+.budget-card { -fx-spacing: 0.3em; }
+
+.budget-block { -fx-spacing: 0.25em; }
+
+.budget-split { -fx-spacing: 1em; }
+
+.budget-label {
+    -fx-text-fill: #5b6475;
+    -fx-font-size: 0.8em;
+}
+
+.budget-total {
+    -fx-text-fill: #111827;
+    -fx-font-size: 2em;
+    -fx-font-weight: bold;
+}
+
+.budget-spent {
+    -fx-text-fill: #ea8a0c;
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+}
+
+.budget-remaining {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+}
+
+.budget-used-label {
+    -fx-text-fill: #111827;
+    -fx-font-size: 0.9em;
+}
+
+.budget-used-percent {
+    -fx-text-fill: #111827;
+    -fx-font-size: 0.9em;
+    -fx-font-weight: bold;
+}
+
+.budget-note {
+    -fx-spacing: 0.6em;
+    -fx-padding: 0.5em 0 0 0;
+}
+
+.icon-trend {
+    -fx-min-width: 1.4em;  -fx-pref-width: 1.4em;  -fx-max-width: 1.4em;
+    -fx-min-height: 1.4em; -fx-pref-height: 1.4em; -fx-max-height: 1.4em;
+    -fx-background-color: #10b981;
+    -fx-shape: "M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z";
+    -fx-scale-shape: true;
+}
+
+/* "On track" pill */
+.pill {
+    -fx-background-radius: 0.6em;
+    -fx-padding: 0.3em 0.9em 0.3em 0.8em;
+    -fx-graphic-text-gap: 0.5em;
+    -fx-font-size: 0.75em;
+    -fx-font-weight: bold;
+}
+
+.pill-ok   { -fx-background-color: rgba(16, 185, 129, 0.15); -fx-text-fill: #059669; }
+.pill-warn { -fx-background-color: rgba(245, 158, 11, 0.18); -fx-text-fill: #b45309; }
+.pill-bad  { -fx-background-color: rgba(244, 63, 94, 0.15);  -fx-text-fill: #be123c; }
+
+.pill-ok .pill-dot   { -fx-background-color: #10b981; }
+.pill-warn .pill-dot { -fx-background-color: #f59e0b; }
+.pill-bad .pill-dot  { -fx-background-color: #f43f5e; }
+
+/* ================= DARK MODE (extra rules for this page) ================= */
+.dark .dash-card {
+    -fx-background-color: #25324a;
+    -fx-border-color: #3b4a63;
+    -fx-effect: null;
+}
+.dark .dash-card:hover {
+    -fx-background-color: #2b3a56;
+    -fx-border-color: #8b7ff8;
+    -fx-effect: dropshadow(gaussian, rgba(109, 93, 246, 0.45), 18, 0.15, 0, 6);
+}
+.dark .dash-card-title,
+.dark .row-name,
+.dark .status-text,
+.dark .material-name,
+.dark .budget-total,
+.dark .budget-used-label,
+.dark .budget-used-percent {
+    -fx-text-fill: white;
+}
+
+.dark .row-line {
+    -fx-border-color: transparent transparent #3b4a63 transparent;
+}
+
+.dark .bar-track { -fx-background-color: #4a5568; }
+
+.dark .muted,
+.dark .budget-label {
+    -fx-text-fill: #9aa5b8;
+}
+
+.dark .budget-spent { -fx-text-fill: #fbbf24; }
+.dark .budget-remaining { -fx-text-fill: #34d399; }
+
+.dark .pill-ok { -fx-text-fill: #34d399; }

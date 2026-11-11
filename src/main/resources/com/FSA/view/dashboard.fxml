@@ -90,13 +90,11 @@
             </Button>
          </HBox>
 
-         <!-- Search
          <HBox fx:id="searchRow" styleClass="nav-row, search-row" alignment="CENTER_LEFT">
             <Region styleClass="nav-icon, icon-search"/>
             <TextField fx:id="searchField" promptText="Search..." styleClass="search-input"
                        HBox.hgrow="ALWAYS" minWidth="0.0"/>
          </HBox>
-         -->
          <!-- Navigation -->
          <Button fx:id="dashboardButton" text="Dashboard" maxWidth="Infinity" minWidth="0.0"
                  styleClass="nav-item, nav-active">

@@ -8,10 +8,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.PasswordField;
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -20,7 +21,7 @@ import java.io.IOException;
 import java.util.Locale;
 
 public class LoginController {
-
+    @FXML private Label errorLabel;
     @FXML private GridPane root;
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
@@ -29,8 +30,7 @@ public class LoginController {
 
     private static final double BASE_FONT = 10.0;
 
-    private final UtilisateurService utilisateurService =
-            new UtilisateurService();
+    private final UtilisateurService utilisateurService = new UtilisateurService();
 
     @FXML
     private void initialize() {
@@ -50,9 +50,12 @@ public class LoginController {
         });
 
         signInButton.setOnAction(e -> seConnecter());
+        emailField.textProperty().addListener((obs, oldV, newV) -> cacherErreur());
+        passwordField.textProperty().addListener((obs, oldV, newV) -> cacherErreur());
     }
 
     private void seConnecter() {
+        cacherErreur();
 
         String email = emailField.getText();
         String password = passwordField.getText();
@@ -85,10 +88,7 @@ public class LoginController {
 
         try {
 
-            Parent dashboard = FXMLLoader.load(
-                    getClass().getResource(
-                            "/com/FSA/view/dashboard.fxml"
-                    )
+            Parent dashboard = FXMLLoader.load(getClass().getResource("/com/FSA/view/dashboard.fxml")
             );
 
             Stage stage = (Stage) root.getScene().getWindow();
@@ -104,13 +104,24 @@ public class LoginController {
     }
 
     private void afficherErreur(String message) {
+        errorLabel.setText(message);
+        errorLabel.setVisible(true);
+        errorLabel.setManaged(true);
+        marquerChamps(true);
+    }
 
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+    private void cacherErreur() {
+        errorLabel.setVisible(false);
+        errorLabel.setManaged(false);
+        marquerChamps(false);
+    }
 
-        alert.setTitle("Erreur de connexion");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-
-        alert.showAndWait();
+    private void marquerChamps(boolean erreur) {
+        for (Node champ : new Node[]{emailField.getParent(), passwordField.getParent()}) {
+            champ.getStyleClass().remove("error");
+            if (erreur) {
+                champ.getStyleClass().add("error");
+            }
+        }
     }
 }

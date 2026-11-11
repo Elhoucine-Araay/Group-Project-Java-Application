@@ -176,3 +176,11 @@
     -fx-text-fill: #a0a3b0;
     -fx-padding: 0 0 1.6em 0;
 }
+.error-label {
+    -fx-text-fill: #e53935;
+    -fx-font-size: 0.9em;
+    -fx-font-weight: bold;
+}
+.field.error {
+    -fx-border-color: transparent transparent #e53935 transparent;
+}
