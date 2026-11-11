@@ -31,8 +31,6 @@ public class DashboardController {
 
     // sidebar
     @FXML private Button settingsButton;
-    @FXML private HBox searchRow;
-    @FXML private TextField searchField;
     @FXML private Button dashboardButton;
     @FXML private Button projectsButton;
     @FXML private Button notificationsButton;
@@ -56,7 +54,7 @@ public class DashboardController {
     private void initialize() {
         // one line replaces all the old sidebar code
         new SidebarBehavior(root, sidebar, sidebarContent,
-                searchRow, searchField, themeRow, themeSwitch).install();
+                themeRow, themeSwitch).install();
 
         // ---- sidebar actions ----
         settingsButton.setOnAction(e -> { /* TODO: open the settings screen */ });

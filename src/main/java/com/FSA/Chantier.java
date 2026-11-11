@@ -14,7 +14,7 @@ public class Chantier extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/com/FSA/view/dashboard.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/com/FSA/view/chefproject.fxml"));
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/com/FSA/images/logo.png")));
         stage.setTitle("CS Management");
         stage.setScene(new Scene(root, 1280, 720));

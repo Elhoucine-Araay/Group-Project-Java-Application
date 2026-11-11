@@ -137,12 +137,6 @@
             </Button>
          </HBox>
 
-
-         <HBox fx:id="searchRow" styleClass="nav-row, search-row" alignment="CENTER_LEFT">
-            <Region styleClass="nav-icon, icon-search"/>
-            <TextField fx:id="searchField" promptText="Search..." styleClass="search-input"
-                       HBox.hgrow="ALWAYS" minWidth="0.0"/>
-         </HBox>
          <!-- Navigation -->
          <Button fx:id="dashboardButton" text="Dashboard" maxWidth="Infinity" minWidth="0.0"
                  styleClass="nav-item, nav-active">
@@ -190,5 +184,15 @@
 
       </VBox>
    </StackPane>
-
+   <!-- ============ POP-UP LAYER: covers the page, hidden until a box is clicked ============ -->
+   <StackPane fx:id="popupLayer" styleClass="popup-layer" visible="false">
+      <VBox fx:id="popupCard" styleClass="popup-card">
+         <HBox alignment="CENTER_LEFT">
+            <Label fx:id="popupTitle" styleClass="popup-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="popupClose" text="✕" styleClass="popup-close"/>
+         </HBox>
+         <VBox fx:id="popupContent" styleClass="popup-content" VBox.vgrow="ALWAYS"/>
+      </VBox>
+   </StackPane>
 </StackPane>

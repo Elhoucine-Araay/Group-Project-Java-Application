@@ -13,6 +13,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+//--popup
+import javafx.animation.FadeTransition;
+import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.util.Duration;
 
 /** Controller of home.fxml: the Dashboard page (attendance, materials, equipment, budget). */
 public class chefprojectController {
@@ -20,14 +26,18 @@ public class chefprojectController {
     @FXML private StackPane root;
     @FXML private StackPane sidebar;
     @FXML private VBox sidebarContent;
+    // ---- pop-up ----
+    @FXML private StackPane popupLayer;
+    @FXML private VBox popupCard;
+    @FXML private Label popupTitle;
+    @FXML private VBox popupContent;
+    @FXML private Button popupClose;
 
     // ---- sidebar ----
     @FXML private Label avatarText;
     @FXML private Label profileName;
     @FXML private Label profileEmail;
     @FXML private Button settingsButton;
-    @FXML private HBox searchRow;
-    @FXML private TextField searchField;
     @FXML private Button dashboardButton;
     @FXML private Button projectsButton;
     @FXML private Button notificationsButton;
@@ -60,7 +70,7 @@ public class chefprojectController {
     @FXML
     private void initialize() {
         // one line replaces all the old sidebar code
-        new SidebarBehavior(root, sidebar, sidebarContent, searchRow, searchField, themeRow, themeSwitch).install();
+        new SidebarBehavior(root, sidebar, sidebarContent, themeRow, themeSwitch).install();
 
         // ---- sidebar actions ----
         settingsButton.setOnAction(e -> { /* TODO: open the settings screen */ });
@@ -78,13 +88,51 @@ public class chefprojectController {
         budgetCard.setOnMouseClicked(e -> openBudgetPopup());
 
         loadSampleData();
+        //popup
+        popupClose.setOnAction(e -> hidePopup());            // the X button closes it
+        popupLayer.setOnMouseClicked(e -> hidePopup());      // a click on the dark background closes it
+        popupCard.setOnMouseClicked(e -> e.consume());       // but a click inside the card must NOT close it
+
+// Escape closes it too
+        root.sceneProperty().addListener((obs, oldScene, scene) -> {
+            if (scene != null) {
+                scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+                    if (e.getCode() == KeyCode.ESCAPE && popupLayer.isVisible()) hidePopup();
+                });
+            }
+        });
+    }
+    private void showPopup(String title, Node... content) {
+        popupTitle.setText(title);
+        popupContent.getChildren().setAll(content);
+
+        popupLayer.setOpacity(0);
+        popupLayer.setVisible(true);
+        FadeTransition fade = new FadeTransition(Duration.millis(150), popupLayer);
+        fade.setToValue(1);
+        fade.play();
     }
 
+    private void hidePopup() {
+        FadeTransition fade = new FadeTransition(Duration.millis(120), popupLayer);
+        fade.setToValue(0);
+        fade.setOnFinished(e -> popupLayer.setVisible(false));
+        fade.play();
+    }
     // build and show your pop-ups in these 4 methods
-    private void openAttendancePopup() { /* TODO */ }
+    private void openAttendancePopup() {
+        Label info = new Label("Here you can show the attendance details.");
+        showPopup("Attendance", info);
+    }
+
+    private void openBudgetPopup() {
+        showPopup("Budget Status",
+                new Label("Total: " + totalBudgetLabel.getText()),
+                new Label("Spent: " + spentLabel.getText()),
+                new Label("Remaining: " + remainingLabel.getText()));
+    }
     private void openMaterialsPopup()  { /* TODO */ }
     private void openEquipmentPopup()  { /* TODO */ }
-    private void openBudgetPopup()     { /* TODO */ }
 
     // =====================================================================
     //  DATA: call these with real values from your database / services.

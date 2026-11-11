@@ -13,7 +13,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -32,14 +31,12 @@ public class SidebarBehavior {
 
     // NEW: everything that is "text" and must disappear when the sidebar is closed
     private static final String[] FADING = {
-            ".profile-text", ".nav-label", ".search-input", ".switch-track", ".icon-btn"
+            ".profile-text", ".nav-label", ".switch-track", ".icon-btn"
     };
 
     private final StackPane root;
     private final StackPane sidebar;
     private final VBox content;
-    private final HBox searchRow;
-    private final TextField searchField;
     private final HBox themeRow;
     private final StackPane themeSwitch;
 
@@ -50,13 +47,10 @@ public class SidebarBehavior {
     private boolean dark = false;
 
     public SidebarBehavior(StackPane root, StackPane sidebar, VBox content,
-                           HBox searchRow, TextField searchField,
                            HBox themeRow, StackPane themeSwitch) {
         this.root = root;
         this.sidebar = sidebar;
         this.content = content;
-        this.searchRow = searchRow;
-        this.searchField = searchField;
         this.themeRow = themeRow;
         this.themeSwitch = themeSwitch;
     }
@@ -97,7 +91,6 @@ public class SidebarBehavior {
         sidebar.setOnMouseEntered(e -> slideTo(true));
         sidebar.setOnMouseExited(e -> slideTo(false));
 
-        searchRow.setOnMouseClicked(e -> searchField.requestFocus());
 
         themeRow.setOnMouseClicked(e -> {
             dark = !dark;
