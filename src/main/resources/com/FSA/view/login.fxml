@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <GridPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="com.FSA.LoginController"
+          fx:controller="com.FSA.controller.LoginController"
           fx:id="root" prefWidth="940.0" prefHeight="535.0"
           styleClass="root-pane" stylesheets="@../css/login.css">
 
