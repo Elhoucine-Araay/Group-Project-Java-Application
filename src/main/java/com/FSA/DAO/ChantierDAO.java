@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Types;
 
 public class ChantierDAO {
 
@@ -57,7 +58,7 @@ public class ChantierDAO {
     }
 
     public void ajouter(String nom, String adresse, LocalDate debut, LocalDate fin, String statut,
-                        int idChefProjet, BigDecimal budget, String image) throws SQLException {
+                        Integer idChefProjet, BigDecimal budget, String image) throws SQLException {
         String sql = """
             INSERT INTO public.chantier
                 (nom, adresse, "dateDebut", "dateFinPrevue", statut, avancement,
@@ -66,6 +67,7 @@ public class ChantierDAO {
                     (SELECT MIN("idUtilisateur") FROM public.chef_departement),
                     ?, ?, ?)
             """;
+
         try (Connection c = DatabaseConnection.getConnection();
              PreparedStatement st = c.prepareStatement(sql)) {
             st.setString(1, nom);
@@ -73,11 +75,13 @@ public class ChantierDAO {
             st.setDate(3, Date.valueOf(debut));
             st.setDate(4, Date.valueOf(fin));
             st.setString(5, statut);
-            st.setInt(6, idChefProjet);
+            if (idChefProjet == null) st.setNull(6, Types.INTEGER);
+            else                      st.setInt(6, idChefProjet);
             st.setBigDecimal(7, budget);
             st.setString(8, image);
             st.executeUpdate();
         }
+
     }
 
     /** All projects, for the cards on the page. */
@@ -88,7 +92,7 @@ public class ChantierDAO {
                        (SELECT COUNT(DISTINCT a."idOuvrier") FROM public.affectation a
                         WHERE a."idChantier" = c."idChantier") AS membres
                 FROM public.chantier c
-                JOIN public.utilisateur u ON u."idUtilisateur" = c."idChefProjet"
+                LEFT JOIN public.utilisateur u ON u."idUtilisateur" = c."idChefProjet"
                 ORDER BY c."dateDebut"
                 """;
         List<Card> result = new ArrayList<>();

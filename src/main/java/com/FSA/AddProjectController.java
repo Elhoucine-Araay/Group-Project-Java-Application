@@ -63,7 +63,11 @@ public class AddProjectController {
         };
         task.setOnSucceeded(e -> {
             chefBox.getItems().setAll(task.getValue());
-            if (task.getValue().isEmpty()) chefBox.setPromptText("No chef available");
+            chefsAvailable = !task.getValue().isEmpty();
+            if (!chefsAvailable) {
+                chefBox.setDisable(true);
+                chefBox.setPromptText("All chefs are busy: the project will wait for a chef");
+            }
         });
         task.setOnFailed(e -> showError(explain(task.getException())));
         run(task);
@@ -113,17 +117,19 @@ public class AddProjectController {
         { showError("The budget is too big."); return; }
         if (debut == null || fin == null)  { showError("Choose the start and finish dates."); return; }
         if (fin.isBefore(debut))           { showError("The finish date must be after the start date."); return; }
-        if (chef == null)                  { showError("Choose the chef who will run the project."); return; }
+        if (chef == null && chefsAvailable) { showError("Choose the chef who will run the project."); return; }
 
         File imageFile = chosenImage;
         createButton.setDisable(true);
-
+        Integer chefId = chef == null ? null : chef.id();
+        String statut = chef == null
+                ? ChantierDAO.PLANIFIE                                   // no chef yet: waits in Scheduled
+                : ChantierDAO.statutPour(debut, fin);                    // otherwise by the dates, as before
         // copying the image and the INSERT can take time: do them in the background
         Task<Void> task = new Task<>() {
             @Override protected Void call() throws Exception {
                 String saved = imageFile == null ? null : ImageStore.save(imageFile);
-                dao.ajouter(nom, adresse, debut, fin, ChantierDAO.statutPour(debut, fin),
-                        chef.id(), budget, saved);
+                dao.ajouter(nom, adresse, debut, fin, statut, chefId, budget, saved);
                 return null;
             }
         };
@@ -147,7 +153,11 @@ public class AddProjectController {
 
     private String explain(Throwable t) {
         if (t instanceof SQLException sql) {
-            if ("23505".equals(sql.getSQLState())) return "This chef already runs another project.";
+            if ("23502".equals(sql.getSQLState())) {
+                return sql.getMessage().contains("idChefProjet")
+                        ? "Run the ALTER TABLE that allows a project without a chef."
+                        : "There is no chef de département in the database.";
+            }
             if ("42703".equals(sql.getSQLState()))
                 return "The database has no budget/image column yet: run the ALTER TABLE first.";
             return "Database error: " + sql.getMessage();
@@ -171,4 +181,5 @@ public class AddProjectController {
         t.setDaemon(true);
         t.start();
     }
+    private boolean chefsAvailable = true;
 }

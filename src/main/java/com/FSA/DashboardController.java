@@ -177,8 +177,13 @@ public class DashboardController {
             completedCount.setText("0");
 
             for (ChantierDAO.Card c : task.getValue()) {
-                VBox card = buildCard(ImageStore.url(c.image()), null, c.nom(), c.adresse(),
-                        formatDates(c.debut(), c.fin()), c.chef(), c.membres());
+                boolean waiting = c.chef() == null;
+                VBox card = buildCard(ImageStore.url(c.image()),
+                        waiting ? "Waiting for a chef" : null,        // small label on the photo
+                        c.nom(), c.adresse(),
+                        formatDates(c.debut(), c.fin()),
+                        waiting ? "No chef yet" : c.chef(),           // the name at the bottom of the card
+                        c.membres());
 
                 String statut = c.statut() == null ? "" : c.statut();
                 switch (statut) {

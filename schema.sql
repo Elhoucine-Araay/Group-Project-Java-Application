@@ -548,7 +548,7 @@ ALTER TABLE ONLY public.presence
 ALTER TABLE ONLY public.tache
     ADD CONSTRAINT fk_tache_chantier FOREIGN KEY ("idChantier") REFERENCES public.chantier("idChantier");
 
-
+ALTER TABLE public.chantier ALTER COLUMN "idChefProjet" DROP NOT NULL;
 -- Completed on 2026-11-03 09:54:28
 
 --
