@@ -73,13 +73,16 @@ public class chefprojectController {
         new SidebarBehavior(root, sidebar, sidebarContent, themeRow, themeSwitch).install();
 
         // ---- sidebar actions ----
-        settingsButton.setOnAction(e -> { /* TODO: open the settings screen */ });
+        settingsButton.setOnAction(e -> {
+            Label info = new Label("Here you can show the Settings.");
+            showPopup("Settings", info);
+        });
         dashboardButton.setOnAction(e -> { /* TODO: already here */ });
         projectsButton.setOnAction(e -> { /* TODO: go to projects */ });
         notificationsButton.setOnAction(e -> { /* TODO: go to notifications */ });
         reportsButton.setOnAction(e -> { /* TODO: go to reports */ });
         teamButton.setOnAction(e -> { /* TODO: go to team */ });
-        logoutButton.setOnAction(e -> { /* TODO: log out and go back to the login screen */ });
+        logoutButton.setOnAction(e -> Navigation.go(root, "login.fxml"));
 
         // ---- click on a box -> pop-up ----
         attendanceCard.setOnMouseClicked(e -> openAttendancePopup());

@@ -423,3 +423,51 @@
     -fx-border-color: transparent;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 14, 0.1, 0, 4);
 }
+/* ================= POP-UP ================= */
+.popup-layer {
+    -fx-background-color: rgba(17, 24, 39, 0.55);   /* the dark transparent background */
+}
+
+.popup-card {
+    -fx-background-color: #f6f8fd;
+    -fx-background-radius: 1.2em;
+    -fx-padding: 1.4em;
+    -fx-spacing: 1em;
+    -fx-max-width: 42em;       /* size of the pop-up card */
+    -fx-max-height: 30em;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 30, 0.1, 0, 10);
+}
+
+.popup-title {
+    -fx-text-fill: #111827;
+    -fx-font-size: 1.4em;
+    -fx-font-weight: bold;
+}
+
+.popup-content { -fx-spacing: 0.6em; }
+
+.popup-close {
+    -fx-background-color: transparent;
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 1.2em;
+    -fx-cursor: hand;
+}
+.popup-close:hover {
+    -fx-background-color: rgba(17, 24, 39, 0.08);
+    -fx-background-radius: 100;
+}
+
+/* dark mode */
+.dark .popup-card  { -fx-background-color: #25324a; }
+.dark .popup-title { -fx-text-fill: white; }
+.dark .popup-close { -fx-text-fill: #9aa5b8; }
+.popup-content .label {
+    -fx-text-fill: #111827;
+}
+
+/* dark mode */
+.dark .popup-content .label {
+    -fx-text-fill: white;
+}
+.popup-muted { -fx-text-fill: #5b6475; }
+.dark .popup-muted { -fx-text-fill: #9aa5b8; }

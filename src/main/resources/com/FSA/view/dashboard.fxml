@@ -137,5 +137,16 @@
 
       </VBox>
    </StackPane>
+   <!-- ============ POP-UP LAYER: covers the page, hidden until needed ============ -->
+   <StackPane fx:id="popupLayer" styleClass="popup-layer" visible="false">
+      <VBox fx:id="popupCard" styleClass="popup-card">
+         <HBox alignment="CENTER_LEFT">
+            <Label fx:id="popupTitle" styleClass="popup-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="popupClose" text="✕" styleClass="popup-close"/>
+         </HBox>
+         <VBox fx:id="popupContent" styleClass="popup-content" VBox.vgrow="ALWAYS"/>
+      </VBox>
+   </StackPane>
 
 </StackPane>

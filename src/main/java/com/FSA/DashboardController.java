@@ -2,16 +2,14 @@ package com.FSA;
 
 import java.util.Locale;
 
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -22,6 +20,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import javafx.animation.FadeTransition;
 
 public class DashboardController {
 
@@ -48,7 +47,12 @@ public class DashboardController {
     @FXML private Label scheduledCount;
     @FXML private Label activeCount;
     @FXML private Label completedCount;
-
+    // ---- pop-up ----
+    @FXML private StackPane popupLayer;
+    @FXML private VBox popupCard;
+    @FXML private Label popupTitle;
+    @FXML private VBox popupContent;
+    @FXML private Button popupClose;
 
     @FXML
     private void initialize() {
@@ -57,14 +61,20 @@ public class DashboardController {
                 themeRow, themeSwitch).install();
 
         // ---- sidebar actions ----
-        settingsButton.setOnAction(e -> { /* TODO: open the settings screen */ });
+        settingsButton.setOnAction(e -> {
+            Label info = new Label("Here you can show the Settings.");
+            showPopup("Settings", info);
+        });
         dashboardButton.setOnAction(e -> { /* TODO: already here */ });
         projectsButton.setOnAction(e -> { /* TODO: go to projects */ });
         notificationsButton.setOnAction(e -> { /* TODO: go to notifications */ });
         reportsButton.setOnAction(e -> { /* TODO: go to reports */ });
         teamButton.setOnAction(e -> { /* TODO: go to team */ });
-        logoutButton.setOnAction(e -> { /* TODO: log out and go back to the login screen */ });
+        logoutButton.setOnAction(e -> Navigation.go(root, "login.fxml"));
 
+        popupClose.setOnAction(e -> hidePopup());            // the X button closes it
+        popupLayer.setOnMouseClicked(e -> hidePopup());      // a click on the dark background closes it
+        popupCard.setOnMouseClicked(e -> e.consume());       // but a click inside the card must NOT close it
     }
 
     // ---------------- project cards ----------------
@@ -141,5 +151,22 @@ public class DashboardController {
         clip.arcWidthProperty().bind(node.widthProperty().multiply(ratio));
         clip.arcHeightProperty().bind(node.widthProperty().multiply(ratio));
         node.setClip(clip);
+    }
+    private void showPopup(String title, Node... content) {
+        popupTitle.setText(title);
+        popupContent.getChildren().setAll(content);
+
+        popupLayer.setOpacity(0);
+        popupLayer.setVisible(true);
+        FadeTransition fade = new FadeTransition(Duration.millis(150), popupLayer);
+        fade.setToValue(1);
+        fade.play();
+    }
+
+    private void hidePopup() {
+        FadeTransition fade = new FadeTransition(Duration.millis(120), popupLayer);
+        fade.setToValue(0);
+        fade.setOnFinished(e -> popupLayer.setVisible(false));
+        fade.play();
     }
 }
