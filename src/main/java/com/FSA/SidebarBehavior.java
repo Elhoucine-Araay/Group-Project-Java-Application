@@ -44,7 +44,7 @@ public class SidebarBehavior {
     private final DoubleProperty width = new SimpleDoubleProperty(0);
     private Timeline timeline;
     private boolean hovered = false;
-    private boolean dark = false;
+    private static boolean dark = false;
 
     public SidebarBehavior(StackPane root, StackPane sidebar, VBox content,
                            HBox themeRow, StackPane themeSwitch) {
@@ -94,10 +94,14 @@ public class SidebarBehavior {
 
         themeRow.setOnMouseClicked(e -> {
             dark = !dark;
-            root.getStyleClass().remove("dark");
-            if (dark) root.getStyleClass().add("dark");
-            themeSwitch.pseudoClassStateChanged(ON, dark);
+            applyTheme();
         });
+        applyTheme();   // apply the saved theme when a page opens
+    }
+    private void applyTheme() {
+        root.getStyleClass().remove("dark");
+        if (dark) root.getStyleClass().add("dark");
+        themeSwitch.pseudoClassStateChanged(ON, dark);
     }
 
     private double railWidth() { return fontPx.get() * RAIL_EM; }

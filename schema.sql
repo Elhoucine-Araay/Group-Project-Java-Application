@@ -26,6 +26,11 @@ SET default_table_access_method = heap;
 -- Name: affectation; Type: TABLE; Schema: public; Owner: -
 --
 
+ALTER TABLE chantier
+    ADD COLUMN budget   numeric(14,2) NOT NULL DEFAULT 0,
+    ADD COLUMN depenses numeric(14,2) NOT NULL DEFAULT 0,
+    ADD COLUMN image    varchar(150);
+
 CREATE TABLE public.affectation (
     "idAffectation" integer NOT NULL,
     "dateAffectation" date,
