@@ -1,6 +1,7 @@
 
 package com.FSA.controller;
 
+import com.FSA.Navigation;
 import com.FSA.service.UtilisateurService;
 
 import javafx.beans.binding.Bindings;
@@ -68,19 +69,10 @@ public class LoginController {
         }
 
         // Redirect according to role
-        if (role.equals("CHEF_DEPARTEMENT")) {
-
-            ouvrirDashboard();
-
-        } else if (role.equals("CHEF_PROJET")) {
-
-            afficherErreur(
-                    "Dashboard Chef Projet n'est pas encore disponible."
-            );
-
-        } else {
-
-            afficherErreur("Rôle utilisateur non reconnu.");
+        switch (role) {
+            case "CHEF_DEPARTEMENT" -> Navigation.go(root, "dashboard.fxml");
+            case "CHEF_PROJET"      -> Navigation.go(root, "chefproject.fxml");
+            default -> afficherErreur("Rôle utilisateur non reconnu.");
         }
     }
 

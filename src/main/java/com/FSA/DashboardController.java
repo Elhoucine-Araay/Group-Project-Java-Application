@@ -71,6 +71,9 @@ public class DashboardController {
         reportsButton.setOnAction(e -> { /* TODO: go to reports */ });
         teamButton.setOnAction(e -> { /* TODO: go to team */ });
         logoutButton.setOnAction(e -> Navigation.go(root, "login.fxml"));
+        addProjectButton.setOnAction(e -> {
+            showPopup("Add Project");
+        } );
 
         popupClose.setOnAction(e -> hidePopup());            // the X button closes it
         popupLayer.setOnMouseClicked(e -> hidePopup());      // a click on the dark background closes it
