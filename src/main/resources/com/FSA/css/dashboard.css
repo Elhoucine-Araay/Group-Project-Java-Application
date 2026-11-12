@@ -471,3 +471,75 @@
 }
 .popup-muted { -fx-text-fill: #5b6475; }
 .dark .popup-muted { -fx-text-fill: #9aa5b8; }
+/* ================= ADD PROJECT FORM ================= */
+.popup-card.popup-form {
+    -fx-max-width: 40em;
+    -fx-max-height: 40em;
+}
+
+.form-box   { -fx-spacing: 0.9em; }
+.form-row   { -fx-spacing: 1em; }
+.form-field { -fx-spacing: 0.35em; }
+
+.form-label {
+    -fx-text-fill: #374151;
+    -fx-font-size: 0.85em;
+    -fx-font-weight: bold;
+}
+
+.form-hint  { -fx-text-fill: #6b7280; -fx-font-size: 0.85em; }
+
+.form-error {
+    -fx-text-fill: #e53935;
+    -fx-font-size: 0.9em;
+    -fx-font-weight: bold;
+}
+
+.form-input {
+    -fx-background-color: white;
+    -fx-background-radius: 0.6em;
+    -fx-border-color: #c3cde2;
+    -fx-border-radius: 0.6em;
+    -fx-padding: 0.55em 0.8em 0.55em 0.8em;
+    -fx-text-fill: #111827;
+    -fx-prompt-text-fill: #9ca3af;
+}
+.form-input:focused { -fx-border-color: #6d5df6; }
+
+.form-box .combo-box,
+.form-box .date-picker {
+    -fx-background-color: white;
+    -fx-background-radius: 0.6em;
+    -fx-border-color: #c3cde2;
+    -fx-border-radius: 0.6em;
+}
+.form-box .date-picker .text-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: #111827;
+}
+.form-box .combo-box .list-cell { -fx-text-fill: #111827; }
+
+.form-cancel {
+    -fx-background-color: transparent;
+    -fx-border-color: #c3cde2;
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #374151;
+    -fx-padding: 0.55em 1.2em 0.55em 1.2em;
+    -fx-cursor: hand;
+}
+.form-cancel:hover { -fx-background-color: rgba(17, 24, 39, 0.06); }
+
+/* dark mode */
+.dark .form-label { -fx-text-fill: #cbd5e1; }
+.dark .form-hint  { -fx-text-fill: #9aa5b8; }
+.dark .form-input,
+.dark .form-box .combo-box,
+.dark .form-box .date-picker {
+    -fx-background-color: #1a2236;
+    -fx-border-color: #3b4a63;
+    -fx-text-fill: white;
+}
+.dark .form-box .date-picker .text-field,
+.dark .form-box .combo-box .list-cell { -fx-text-fill: white; }
+.dark .form-cancel { -fx-border-color: #3b4a63; -fx-text-fill: #cbd5e1; }

@@ -21,6 +21,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.animation.FadeTransition;
+import com.FSA.DAO.ChantierDAO;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import javafx.concurrent.Task;
+import javafx.fxml.FXMLLoader;
 
 public class DashboardController {
 
@@ -71,9 +80,8 @@ public class DashboardController {
         reportsButton.setOnAction(e -> { /* TODO: go to reports */ });
         teamButton.setOnAction(e -> { /* TODO: go to team */ });
         logoutButton.setOnAction(e -> Navigation.go(root, "login.fxml"));
-        addProjectButton.setOnAction(e -> {
-            showPopup("Add Project");
-        } );
+        addProjectButton.setOnAction(e -> openAddProjectPopup());
+        loadProjects();
 
         popupClose.setOnAction(e -> hidePopup());            // the X button closes it
         popupLayer.setOnMouseClicked(e -> hidePopup());      // a click on the dark background closes it
@@ -89,11 +97,14 @@ public class DashboardController {
      * @param tag        small label on the photo (e.g. "Next"), or null
      * @param members    number of members, or null to hide the badge
      */
-    public VBox buildCard(String imageClass, String tag, String title, String location,
+    public VBox buildCard(String imageUrl, String tag, String title, String location,
                           String dates, String owner, Integer members) {
 
         StackPane img = new StackPane();
-        img.getStyleClass().addAll("card-img", imageClass);
+        img.getStyleClass().add("card-img");                 // size and "cover" still come from the CSS
+        if (imageUrl != null) {
+            img.setStyle("-fx-background-image: url(\"" + imageUrl + "\");");
+        }
         img.setAlignment(Pos.TOP_LEFT);
         if (tag != null) {
             Label t = new Label(tag);
@@ -131,6 +142,67 @@ public class DashboardController {
         return card;
     }
 
+    private final ChantierDAO chantierDAO = new ChantierDAO();
+
+    private void openAddProjectPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/FSA/view/add-project.fxml"));
+            Node form = loader.load();
+            AddProjectController controller = loader.getController();
+
+            controller.setCallbacks(
+                    this::hidePopup,                          // Cancel
+                    () -> { hidePopup(); loadProjects(); });  // saved: close, then reload the cards
+
+            showPopup("New project", true, form);
+        } catch (IOException ex) {
+            throw new RuntimeException("Cannot open add-project.fxml", ex);
+        }
+    }
+
+    /** Reads the projects from the database and fills the 3 columns. */
+    private void loadProjects() {
+        Task<List<ChantierDAO.Card>> task = new Task<>() {
+            @Override protected List<ChantierDAO.Card> call() throws Exception {
+                return chantierDAO.toutes();
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+            scheduledCards.getChildren().clear();
+            activeCards.getChildren().clear();
+            completedCards.getChildren().clear();
+            scheduledCount.setText("0");
+            activeCount.setText("0");
+            completedCount.setText("0");
+
+            for (ChantierDAO.Card c : task.getValue()) {
+                VBox card = buildCard(ImageStore.url(c.image()), null, c.nom(), c.adresse(),
+                        formatDates(c.debut(), c.fin()), c.chef(), c.membres());
+
+                String statut = c.statut() == null ? "" : c.statut();
+                switch (statut) {
+                    case ChantierDAO.PLANIFIE -> addCard(scheduledCards, scheduledCount, card);
+                    case ChantierDAO.TERMINE  -> addCard(completedCards, completedCount, card);
+                    default                   -> addCard(activeCards, activeCount, card);  // EN_COURS or unknown
+                }
+            }
+        });
+
+        task.setOnFailed(e -> showPopup("Error",
+                new Label("Cannot load the projects: " + task.getException().getMessage())));
+
+        Thread t = new Thread(task);
+        t.setDaemon(true);
+        t.start();
+    }
+
+    private String formatDates(LocalDate start, LocalDate end) {
+        if (start == null || end == null) return "";
+        DateTimeFormatter month = DateTimeFormatter.ofPattern("MMM", Locale.ENGLISH);
+        return start.format(month) + " - " + end.format(month) + " " + end.getYear();
+    }
+
     private HBox metaRow(String iconClass, String text) {
         Region icon = new Region();
         icon.getStyleClass().add(iconClass);
@@ -156,6 +228,7 @@ public class DashboardController {
         node.setClip(clip);
     }
     private void showPopup(String title, Node... content) {
+        popupCard.getStyleClass().remove("popup-form");     // NEW: back to the normal size
         popupTitle.setText(title);
         popupContent.getChildren().setAll(content);
 
@@ -165,7 +238,10 @@ public class DashboardController {
         fade.setToValue(1);
         fade.play();
     }
-
+    private void showPopup(String title, boolean form, Node... content) {
+        showPopup(title, content);
+        if (form) popupCard.getStyleClass().add("popup-form");
+    }
     private void hidePopup() {
         FadeTransition fade = new FadeTransition(Duration.millis(120), popupLayer);
         fade.setToValue(0);
