@@ -76,25 +76,6 @@ public class LoginController {
         }
     }
 
-    private void ouvrirDashboard() {
-
-        try {
-
-            Parent dashboard = FXMLLoader.load(getClass().getResource("/com/FSA/view/dashboard.fxml")
-            );
-
-            Stage stage = (Stage) root.getScene().getWindow();
-
-            stage.setScene(new Scene(dashboard, 1280, 720));
-            stage.setTitle("CS Management");
-
-        } catch (IOException | NullPointerException e) {
-
-            afficherErreur("Impossible d'ouvrir le Dashboard.");
-            e.printStackTrace();
-        }
-    }
-
     private void afficherErreur(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
