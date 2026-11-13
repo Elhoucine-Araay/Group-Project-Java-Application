@@ -101,16 +101,27 @@ public class DashboardController {
                           String dates, String owner, Integer members) {
 
         StackPane img = new StackPane();
-        img.getStyleClass().add("card-img");                 // size and "cover" still come from the CSS
+        img.getStyleClass().add("card-img");
         if (imageUrl != null) {
             img.setStyle("-fx-background-image: url(\"" + imageUrl + "\");");
         }
         img.setAlignment(Pos.TOP_LEFT);
+        // dark layer over the photo: invisible, it only shows on hover (see the CSS)
+        Region overlay = new Region();
+        overlay.getStyleClass().add("card-overlay");
+        overlay.setMouseTransparent(true);
+        img.getChildren().add(overlay);
+
         if (tag != null) {
             Label t = new Label(tag);
             t.getStyleClass().add("tag");
             img.getChildren().add(t);
         }
+        Label chip = new Label("View details");
+        chip.getStyleClass().add("view-chip");
+        chip.setMouseTransparent(true);
+        StackPane.setAlignment(chip, Pos.BOTTOM_RIGHT);
+        img.getChildren().add(chip);
 
         Label titleLabel = new Label(title);
         titleLabel.getStyleClass().add("card-title");
@@ -125,7 +136,7 @@ public class DashboardController {
         if (members != null) {
             Region gap = new Region();
             HBox.setHgrow(gap, Priority.ALWAYS);
-            Label badge = new Label(members + " members");
+            Label badge = new Label(members + (members == 1 ? " member" : " members"));
             badge.getStyleClass().add("members");
             footer.getChildren().addAll(gap, badge);
         }
@@ -138,7 +149,7 @@ public class DashboardController {
 
         VBox card = new VBox(img, body);
         card.getStyleClass().add("card");
-        roundCorners(card, 0.2);
+        roundCorners(card, 0.18);
         return card;
     }
 
@@ -269,8 +280,8 @@ public class DashboardController {
         Rectangle clip = new Rectangle();
         clip.widthProperty().bind(node.widthProperty());
         clip.heightProperty().bind(node.heightProperty());
-        clip.arcWidthProperty().bind(node.widthProperty().multiply(ratio));
-        clip.arcHeightProperty().bind(node.widthProperty().multiply(ratio));
+        clip.arcWidthProperty().bind(node.heightProperty().multiply(ratio));    // was widthProperty
+        clip.arcHeightProperty().bind(node.heightProperty().multiply(ratio));
         node.setClip(clip);
     }
     private void showPopup(String title, Node... content) {

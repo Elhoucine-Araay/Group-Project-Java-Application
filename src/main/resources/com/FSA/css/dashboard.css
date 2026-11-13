@@ -126,7 +126,7 @@
 .card-img {
     -fx-min-height: 7em;
     -fx-pref-height: 7em;
-    -fx-padding: 0.6em;
+    -fx-padding: 0;
     -fx-background-color: #cbd2e1;
     -fx-background-size: cover;
     -fx-background-position: center center;
@@ -146,6 +146,8 @@
     -fx-font-size: 0.7em;
     -fx-font-weight: bold;
     -fx-text-fill: #222;
+    -fx-translate-x: 0.6em;
+    -fx-translate-y: 0.6em;
 }
 
 .card-body {
@@ -166,7 +168,7 @@
 }
 
 .meta-text {
-    -fx-font-size: 0.7em;
+    -fx-font-size: 0.8em;
     -fx-text-fill: #8a8fa0;
 }
 
@@ -188,7 +190,7 @@
 .card-footer { -fx-padding: 0.3em 0 0 0; }
 
 .owner {
-    -fx-font-size: 0.65em;
+    -fx-font-size: 0.75em;
     -fx-text-fill: #8a8fa0;
 }
 
@@ -196,7 +198,7 @@
     -fx-background-color: #f1f3f9;
     -fx-background-radius: 0.6em;
     -fx-padding: 0.2em 0.7em 0.2em 0.7em;
-    -fx-font-size: 0.7em;
+    -fx-font-size: 0.75em;
     -fx-font-weight: bold;
     -fx-text-fill: #1d2433;
 }
@@ -547,9 +549,25 @@
 .card.clickable { -fx-cursor: hand; }
 
 .card.clickable:hover {
-    -fx-background-color: #f1eeff;                 /* light purple tint behind the text */
-    -fx-border-color: #6d5df6;                     /* purple outline (same 1px width: nothing shifts) */
-    -fx-effect: innershadow(gaussian, rgba(109, 93, 246, 0.45), 14, 0.2, 0, 0);   /* glow inside the card */
+    -fx-border-color: #6d5df6;
+}
+.card.clickable:hover .card-overlay { -fx-background-color: rgba(17, 24, 39, 0.35); }
+.card.clickable:hover .view-chip    { -fx-opacity: 1; }
+.card.clickable:hover .card-title   { -fx-text-fill: #6d5df6; }
+
+/* new pieces inside the photo */
+.card-overlay { -fx-background-color: transparent; }
+
+.view-chip {
+    -fx-opacity: 0;                      /* hidden until the card is hovered */
+    -fx-background-color: white;
+    -fx-background-radius: 999;
+    -fx-padding: 0.3em 0.9em 0.3em 0.9em;
+    -fx-font-size: 0.75em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #111827;
+    -fx-translate-x: -0.6em;             /* a little away from the corner */
+    -fx-translate-y: -0.6em;
 }
 
 /* the project details pop-up is bigger than the others */
