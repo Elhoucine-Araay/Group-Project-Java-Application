@@ -189,7 +189,10 @@ public class DashboardController {
                 switch (statut) {
                     case ChantierDAO.PLANIFIE -> addCard(scheduledCards, scheduledCount, card);
                     case ChantierDAO.TERMINE  -> addCard(completedCards, completedCount, card);
-                    default                   -> addCard(activeCards, activeCount, card);  // EN_COURS or unknown
+                    default -> {
+                        addCard(activeCards, activeCount, card);
+                        makeClickable(card, c);            // hover + click: only the Active column
+                    }
                 }
             }
         });
@@ -201,7 +204,45 @@ public class DashboardController {
         t.setDaemon(true);
         t.start();
     }
+    private void makeClickable(VBox card, ChantierDAO.Card data) {
+        card.getStyleClass().add("clickable");              // the hover style is in dashboard.css
+        card.setOnMouseClicked(e -> openProjectPopup(data));
+    }
 
+    private void openProjectPopup(ChantierDAO.Card c) {
+        Task<ChantierDAO.Details> task = new Task<>() {
+            @Override protected ChantierDAO.Details call() throws Exception {
+                return chantierDAO.details(c.id());
+            }
+        };
+        task.setOnSucceeded(e -> showDetails(c, task.getValue()));
+        task.setOnFailed(e -> showPopup("Error",
+                new Label("Cannot load the project: " + task.getException().getMessage())));
+
+        Thread t = new Thread(task);
+        t.setDaemon(true);
+        t.start();
+    }
+
+    private void showDetails(ChantierDAO.Card c, ChantierDAO.Details d) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/FSA/view/project-details.fxml"));
+            Node content = loader.load();
+            ProjectDetailsController controller = loader.getController();
+
+            String dates = formatDates(c.debut(), c.fin());
+
+            // the small copy of the card (it is not clickable)
+            VBox mini = buildCard(ImageStore.url(c.image()), null, c.nom(), c.adresse(), dates,
+                    c.chef() == null ? "No chef yet" : c.chef(), c.membres());
+            mini.getStyleClass().add("mini-card");
+
+            controller.setProject(c, d, dates, mini);
+            showPopup("", "popup-wide", content);
+        } catch (IOException ex) {
+            throw new RuntimeException("Cannot open project-details.fxml", ex);
+        }
+    }
     private String formatDates(LocalDate start, LocalDate end) {
         if (start == null || end == null) return "";
         DateTimeFormatter month = DateTimeFormatter.ofPattern("MMM", Locale.ENGLISH);
@@ -233,7 +274,7 @@ public class DashboardController {
         node.setClip(clip);
     }
     private void showPopup(String title, Node... content) {
-        popupCard.getStyleClass().remove("popup-form");     // NEW: back to the normal size
+        popupCard.getStyleClass().removeAll("popup-form", "popup-wide");   // back to the normal size
         popupTitle.setText(title);
         popupContent.getChildren().setAll(content);
 
@@ -243,9 +284,17 @@ public class DashboardController {
         fade.setToValue(1);
         fade.play();
     }
+
+    // the Add Project form
     private void showPopup(String title, boolean form, Node... content) {
         showPopup(title, content);
         if (form) popupCard.getStyleClass().add("popup-form");
+    }
+
+    // NEW: any size defined in the CSS, e.g. "popup-wide" for the project details
+    private void showPopup(String title, String sizeClass, Node... content) {
+        showPopup(title, content);
+        popupCard.getStyleClass().add(sizeClass);
     }
     private void hidePopup() {
         FadeTransition fade = new FadeTransition(Duration.millis(120), popupLayer);

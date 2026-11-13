@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.FSA.ProjectDetailsController"
+            fitToWidth="true" hbarPolicy="NEVER" styleClass="col-scroll" VBox.vgrow="ALWAYS">
+
+    <!-- chefproject.css already has the bars, pills and budget styles: we reuse them -->
+    <stylesheets>
+        <URL value="@../css/chefproject.css"/>
+        <URL value="@../css/project-details.css"/>
+    </stylesheets>
+
+    <content>
+        <VBox styleClass="details">
+
+            <!-- ===== top row: mini card, chef, dates + location ===== -->
+            <HBox styleClass="details-top">
+                <StackPane fx:id="miniCardHolder" alignment="TOP_LEFT"/>
+
+                <VBox styleClass="chef-box">
+                    <Label text="Chef de projet :" styleClass="chef-title"/>
+                    <HBox styleClass="chef-row" alignment="CENTER_LEFT">
+                        <StackPane styleClass="avatar-sm">
+                            <Region styleClass="avatar-sm-icon"/>
+                        </StackPane>
+                        <Label fx:id="chefName" styleClass="row-name"/>
+                    </HBox>
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <VBox styleClass="meta-big" alignment="TOP_RIGHT">
+                    <HBox styleClass="meta-big-row" alignment="CENTER_RIGHT">
+                        <Region styleClass="icon-cal, icon-big"/>
+                        <Label fx:id="datesLabel" styleClass="meta-big-text"/>
+                    </HBox>
+                    <HBox styleClass="meta-big-row" alignment="CENTER_RIGHT">
+                        <Region styleClass="icon-pin, icon-big"/>
+                        <Label fx:id="locationLabel" styleClass="meta-big-text"/>
+                    </HBox>
+                </VBox>
+            </HBox>
+
+            <!-- ===== middle row: members + materials ===== -->
+            <HBox styleClass="details-middle">
+
+                <VBox styleClass="detail-card" HBox.hgrow="ALWAYS" minWidth="0.0">
+                    <Label text="Members" styleClass="dash-card-title"/>
+                    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="col-scroll, members-scroll">
+                        <content>
+                            <VBox fx:id="membersList"/>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+
+                <VBox styleClass="detail-card" HBox.hgrow="ALWAYS" minWidth="0.0">
+                    <Label text="Materials Inventory" styleClass="dash-card-title"/>
+                    <VBox fx:id="materialsList"/>
+                </VBox>
+            </HBox>
+
+            <!-- ===== budget ===== -->
+            <VBox styleClass="detail-card">
+
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Budget Status" styleClass="dash-card-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="budgetPill" text="On track" styleClass="pill, pill-ok">
+                        <graphic><Region styleClass="pill-dot"/></graphic>
+                    </Label>
+                </HBox>
+
+                <HBox styleClass="budget-top" alignment="CENTER_LEFT">
+                    <Region styleClass="icon-wallet"/>
+                    <VBox styleClass="budget-block">
+                        <Label text="Total Project Budget" styleClass="budget-label"/>
+                        <Label fx:id="totalBudgetLabel" styleClass="budget-total-sm"/>
+                    </VBox>
+                </HBox>
+
+                <Region styleClass="detail-sep"/>
+
+                <HBox styleClass="budget-split">
+                    <VBox HBox.hgrow="ALWAYS" styleClass="budget-block">
+                        <Label text="Spent" styleClass="budget-label"/>
+                        <Label fx:id="spentLabel" styleClass="budget-spent"/>
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" styleClass="budget-block">
+                        <Label text="Remaining" styleClass="budget-label"/>
+                        <Label fx:id="remainingLabel" styleClass="budget-remaining"/>
+                    </VBox>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Budget used" styleClass="budget-used-label"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="usedPercentLabel" styleClass="budget-used-percent"/>
+                </HBox>
+
+                <StackPane fx:id="budgetBar" styleClass="bar-track, bar-lg" alignment="CENTER_LEFT">
+                    <Region fx:id="budgetFill" styleClass="bar-fill, bar-budget"/>
+                </StackPane>
+
+                <Label fx:id="budgetNote" styleClass="budget-label"/>
+            </VBox>
+
+        </VBox>
+    </content>
+</ScrollPane>

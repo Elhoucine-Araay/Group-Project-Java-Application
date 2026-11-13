@@ -20,6 +20,70 @@ public class ChantierDAO {
     public static final String EN_COURS = "EN_COURS";
     public static final String TERMINE  = "TERMINE";
 
+    public record Material(String nom, double prevue, double utilisee, String unite) {}
+
+    public record Details(BigDecimal budget, BigDecimal depenses,
+                          List<String> membres, List<Material> materiaux) {}
+    /** What the project pop-up shows. Loaded when a card is clicked. */
+    public Details details(int idChantier) throws SQLException {
+        BigDecimal budget = BigDecimal.ZERO;
+        BigDecimal depenses = BigDecimal.ZERO;
+        List<String> membres = new ArrayList<>();
+        List<Material> materiaux = new ArrayList<>();
+
+        try (Connection c = DatabaseConnection.getConnection()) {
+
+            try (PreparedStatement st = c.prepareStatement(
+                    "SELECT budget, depenses FROM public.chantier WHERE \"idChantier\" = ?")) {
+                st.setInt(1, idChantier);
+                try (ResultSet rs = st.executeQuery()) {
+                    if (rs.next()) {
+                        budget = rs.getBigDecimal("budget");
+                        depenses = rs.getBigDecimal("depenses");
+                    }
+                }
+            }
+
+            // workers assigned to this site (DISTINCT: one worker can have several assignments)
+            try (PreparedStatement st = c.prepareStatement("""
+                SELECT DISTINCT o."idOuvrier", o.prenom, o.nom
+                FROM public.affectation a
+                JOIN public.ouvrier o ON o."idOuvrier" = a."idOuvrier"
+                WHERE a."idChantier" = ?
+                ORDER BY o.nom, o.prenom
+                """)) {
+                st.setInt(1, idChantier);
+                try (ResultSet rs = st.executeQuery()) {
+                    while (rs.next()) {
+                        String prenom = rs.getString("prenom");
+                        String nom = rs.getString("nom");
+                        membres.add(((prenom == null ? "" : prenom) + " " + (nom == null ? "" : nom)).trim());
+                    }
+                }
+            }
+
+            // materials of this site: planned and used quantities, added up per material
+            try (PreparedStatement st = c.prepareStatement("""
+                SELECT m.nom, m.unite,
+                       COALESCE(SUM(a."quantitePrevue"), 0)   AS prevue,
+                       COALESCE(SUM(a."quantiteUtilisee"), 0) AS utilisee
+                FROM public.affectation a
+                JOIN public.materiel m ON m."idMateriel" = a."idMateriel"
+                WHERE a."idChantier" = ?
+                GROUP BY m."idMateriel", m.nom, m.unite
+                ORDER BY m.nom
+                """)) {
+                st.setInt(1, idChantier);
+                try (ResultSet rs = st.executeQuery()) {
+                    while (rs.next()) {
+                        materiaux.add(new Material(rs.getString("nom"), rs.getDouble("prevue"),
+                                rs.getDouble("utilisee"), rs.getString("unite")));
+                    }
+                }
+            }
+        }
+        return new Details(budget, depenses, membres, materiaux);
+    }
     /** An item of the "Chef de projet" list. ComboBox displays toString(). */
     public record ChefOption(int id, String nom) {
         @Override public String toString() { return nom; }

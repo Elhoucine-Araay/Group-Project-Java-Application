@@ -1,0 +1,64 @@
+.details        { -fx-spacing: 1.2em; -fx-padding: 0.2em 0.3em 0.6em 0.2em; }
+.details-top    { -fx-spacing: 1.2em; }
+.details-middle { -fx-spacing: 1.2em; }
+
+/* the small copy of the project card at the top left */
+.card.mini-card {
+    -fx-min-width: 12em;  -fx-pref-width: 12em;  -fx-max-width: 12em;
+}
+
+.chef-box   { -fx-spacing: 0.7em; -fx-padding: 0.2em 0 0 0; }
+.chef-row   { -fx-spacing: 0.7em; }
+.chef-title { -fx-text-fill: #111827; -fx-font-size: 1.15em; -fx-font-weight: bold; }
+
+.meta-big      { -fx-spacing: 0.7em; -fx-padding: 0.4em 0.4em 0 0; }
+.meta-big-row  { -fx-spacing: 0.6em; }
+.meta-big-text { -fx-text-fill: #4b5563; -fx-font-size: 1.3em; }
+
+/* ".icon-cal.icon-big" has BOTH classes, so it beats the small size of ".icon-cal" */
+.icon-cal.icon-big, .icon-pin.icon-big {
+    -fx-min-width: 1.8em;  -fx-pref-width: 1.8em;  -fx-max-width: 1.8em;
+    -fx-min-height: 1.8em; -fx-pref-height: 1.8em; -fx-max-height: 1.8em;
+    -fx-background-color: #111827;
+}
+
+.detail-card {
+    -fx-background-color: #edf1f9;
+    -fx-background-radius: 1.2em;
+    -fx-border-color: #c3cde2;
+    -fx-border-radius: 1.2em;
+    -fx-border-width: 1;
+    -fx-padding: 1em 1.1em 0.9em 1.1em;
+    -fx-spacing: 0.6em;
+}
+
+.members-scroll {
+    -fx-min-height: 6em;
+    -fx-pref-height: 14em;
+    -fx-max-height: 14em;
+}
+
+.budget-top      { -fx-spacing: 0.7em; }
+.budget-total-sm { -fx-text-fill: #111827; -fx-font-size: 1.3em; -fx-font-weight: bold; }
+
+.detail-sep {
+    -fx-min-height: 1;  -fx-pref-height: 1;  -fx-max-height: 1;
+    -fx-background-color: #cfd7e6;
+}
+
+.icon-wallet {
+    -fx-min-width: 2em;  -fx-pref-width: 2em;  -fx-max-width: 2em;
+    -fx-min-height: 2em; -fx-pref-height: 2em; -fx-max-height: 2em;
+    -fx-background-color: #14b8a6;
+    -fx-shape: "M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z";
+    -fx-scale-shape: true;
+}
+
+/* ---------- dark mode ---------- */
+.dark .detail-card     { -fx-background-color: #25324a; -fx-border-color: #3b4a63; }
+.dark .chef-title,
+.dark .budget-total-sm { -fx-text-fill: white; }
+.dark .meta-big-text   { -fx-text-fill: #cbd5e1; }
+.dark .icon-cal.icon-big,
+.dark .icon-pin.icon-big { -fx-background-color: #cbd5e1; }
+.dark .detail-sep      { -fx-background-color: #3b4a63; }
