@@ -12,6 +12,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Types;
+import org.mindrot.jbcrypt.BCrypt;
+import java.text.Normalizer;
+import java.util.Locale;
 
 public class ChantierDAO {
 
@@ -24,6 +27,69 @@ public class ChantierDAO {
 
     public record Details(BigDecimal budget, BigDecimal depenses,
                           List<String> membres, List<Material> materiaux) {}
+
+    public static String emailPour(String prenom, String nom) {
+        return nettoyer(prenom) + "." + nettoyer(nom) + "@cms.ma";
+    }
+
+    private static String nettoyer(String s) {
+        String n = Normalizer.normalize(s.trim(), Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")            // remove accents
+                .replaceAll("[^A-Za-z0-9]", "")      // remove spaces, dashes, ...
+                .toLowerCase(Locale.ROOT);
+        return n;
+    }
+
+    /** Creates the user + chef_projet rows on the given connection and returns the new id. */
+    private static int creerChef(Connection cn, String prenom, String nom, String motDePasse) throws SQLException {
+        String sql = """
+        INSERT INTO public.utilisateur (nom, email, "motDePasse")
+        VALUES (?, ?, ?)
+        RETURNING "idUtilisateur"
+        """;
+        int id;
+        try (PreparedStatement st = cn.prepareStatement(sql)) {
+            st.setString(1, prenom.trim() + " " + nom.trim());
+            st.setString(2, emailPour(prenom, nom));
+            st.setString(3, BCrypt.hashpw(motDePasse, BCrypt.gensalt()));
+            try (ResultSet rs = st.executeQuery()) {
+                rs.next();
+                id = rs.getInt(1);
+            }
+        }
+        try (PreparedStatement st = cn.prepareStatement(
+                "INSERT INTO public.chef_projet (\"idUtilisateur\") VALUES (?)")) {
+            st.setInt(1, id);
+            st.executeUpdate();
+        }
+        return id;
+    }
+    public void assignerChef(int idChantier, String prenom, String nom, String motDePasse,
+                             String statut) throws SQLException {
+        String sql = """
+        UPDATE public.chantier
+        SET "idChefProjet" = ?, statut = ?
+        WHERE "idChantier" = ? AND "idChefProjet" IS NULL
+        """;
+        try (Connection cn = DatabaseConnection.getConnection()) {
+            cn.setAutoCommit(false);
+            try {
+                int idChef = creerChef(cn, prenom, nom, motDePasse);
+                try (PreparedStatement st = cn.prepareStatement(sql)) {
+                    st.setInt(1, idChef);
+                    st.setString(2, statut);
+                    st.setInt(3, idChantier);
+                    if (st.executeUpdate() != 1) {
+                        throw new SQLException("This project already has a chef.");
+                    }
+                }
+                cn.commit();
+            } catch (SQLException e) {
+                cn.rollback();
+                throw e;
+            }
+        }
+    }
     /** What the project pop-up shows. Loaded when a card is clicked. */
     public Details details(int idChantier) throws SQLException {
         BigDecimal budget = BigDecimal.ZERO;
@@ -84,10 +150,6 @@ public class ChantierDAO {
         }
         return new Details(budget, depenses, membres, materiaux);
     }
-    /** An item of the "Chef de projet" list. ComboBox displays toString(). */
-    public record ChefOption(int id, String nom) {
-        @Override public String toString() { return nom; }
-    }
 
     /** What one project card needs. */
     public record Card(int id, String nom, String adresse, LocalDate debut, LocalDate fin,
@@ -100,52 +162,44 @@ public class ChantierDAO {
         return EN_COURS;
     }
 
-    /** Chefs de projet who do not run a project yet (uq_chantier_chef_projet). */
-    public List<ChefOption> chefsDisponibles() throws SQLException {
+
+    public static void ajouter(String nom, String adresse, LocalDate debut, LocalDate fin, String statut,
+                               String chefPrenom, String chefNom, String chefMotDePasse,
+                               BigDecimal budget, String image) throws SQLException {
+
         String sql = """
-                SELECT u."idUtilisateur", u.nom
-                FROM public.chef_projet cp
-                JOIN public.utilisateur u ON u."idUtilisateur" = cp."idUtilisateur"
-                WHERE NOT EXISTS (SELECT 1 FROM public.chantier c
-                                  WHERE c."idChefProjet" = cp."idUtilisateur")
-                ORDER BY u.nom
-                """;
-        List<ChefOption> result = new ArrayList<>();
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement st = c.prepareStatement(sql);
-             ResultSet rs = st.executeQuery()) {
-            while (rs.next()) {
-                result.add(new ChefOption(rs.getInt("idUtilisateur"), rs.getString("nom")));
+        INSERT INTO public.chantier
+            (nom, adresse, "dateDebut", "dateFinPrevue", statut,
+             "idChefDepartement", "idChefProjet", budget, image)
+        VALUES (?, ?, ?, ?, ?,
+                (SELECT MIN("idUtilisateur") FROM public.chef_departement), ?, ?, ?)
+        """;
+
+        try (Connection cn = DatabaseConnection.getConnection()) {
+            cn.setAutoCommit(false);                       // one transaction
+            try {
+                Integer idChef = null;
+                if (chefPrenom != null) {
+                    idChef = creerChef(cn, chefPrenom, chefNom, chefMotDePasse);
+                }
+
+                try (PreparedStatement st = cn.prepareStatement(sql)) {
+                    st.setString(1, nom);
+                    st.setString(2, adresse);
+                    st.setDate(3, java.sql.Date.valueOf(debut));
+                    st.setDate(4, java.sql.Date.valueOf(fin));
+                    st.setString(5, statut);
+                    if (idChef == null) st.setNull(6, Types.INTEGER); else st.setInt(6, idChef);
+                    st.setBigDecimal(7, budget);
+                    st.setString(8, image);
+                    st.executeUpdate();
+                }
+                cn.commit();                               // both rows saved
+            } catch (SQLException e) {
+                cn.rollback();                             // nothing saved
+                throw e;
             }
         }
-        return result;
-    }
-
-    public void ajouter(String nom, String adresse, LocalDate debut, LocalDate fin, String statut,
-                        Integer idChefProjet, BigDecimal budget, String image) throws SQLException {
-        String sql = """
-            INSERT INTO public.chantier
-                (nom, adresse, "dateDebut", "dateFinPrevue", statut, avancement,
-                 "idChefDepartement", "idChefProjet", budget, image)
-            VALUES (?, ?, ?, ?, ?, 0,
-                    (SELECT MIN("idUtilisateur") FROM public.chef_departement),
-                    ?, ?, ?)
-            """;
-
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement st = c.prepareStatement(sql)) {
-            st.setString(1, nom);
-            st.setString(2, adresse);
-            st.setDate(3, Date.valueOf(debut));
-            st.setDate(4, Date.valueOf(fin));
-            st.setString(5, statut);
-            if (idChefProjet == null) st.setNull(6, Types.INTEGER);
-            else                      st.setInt(6, idChefProjet);
-            st.setBigDecimal(7, budget);
-            st.setString(8, image);
-            st.executeUpdate();
-        }
-
     }
 
     /** All projects, for the cards on the page. */

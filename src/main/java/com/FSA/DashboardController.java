@@ -3,10 +3,6 @@ package com.FSA;
 import java.util.Locale;
 
 import javafx.animation.*;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -22,6 +18,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.animation.FadeTransition;
 import com.FSA.DAO.ChantierDAO;
+import javafx.scene.control.PasswordField;
+import java.sql.SQLException;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -198,11 +196,14 @@ public class DashboardController {
 
                 String statut = c.statut() == null ? "" : c.statut();
                 switch (statut) {
-                    case ChantierDAO.PLANIFIE -> addCard(scheduledCards, scheduledCount, card);
+                    case ChantierDAO.PLANIFIE -> {
+                        addCard(scheduledCards, scheduledCount, card);
+                        if (waiting) makeAssignable(card, c);      // NEW: only cards with no chef
+                    }
                     case ChantierDAO.TERMINE  -> addCard(completedCards, completedCount, card);
                     default -> {
                         addCard(activeCards, activeCount, card);
-                        makeClickable(card, c);            // hover + click: only the Active column
+                        makeClickable(card, c);
                     }
                 }
             }
@@ -214,6 +215,84 @@ public class DashboardController {
         Thread t = new Thread(task);
         t.setDaemon(true);
         t.start();
+    }
+    private void makeAssignable(Node card, ChantierDAO.Card c) {
+        card.getStyleClass().add("clickable");           // same hover as the Active cards
+        Node chip = card.lookup(".view-chip");
+        if (chip instanceof Label l) l.setText("Assign chef");
+        card.setOnMouseClicked(e -> openAssignPopup(c));
+    }
+
+    private void openAssignPopup(ChantierDAO.Card c) {
+        TextField first = new TextField();
+        first.setPromptText("First name");
+        TextField last = new TextField();
+        last.setPromptText("Last name");
+        HBox names = new HBox(10, first, last);
+        HBox.setHgrow(first, Priority.ALWAYS);
+        HBox.setHgrow(last, Priority.ALWAYS);
+
+        PasswordField pass = new PasswordField();
+        pass.setPromptText("Password (min. 6 characters)");
+
+        Label hint = new Label("Account: firstname.lastname@cms.ma");
+        hint.getStyleClass().add("form-hint");
+        Label error = new Label();
+        error.setStyle("-fx-text-fill: #dc2626;");
+        error.setWrapText(true);
+
+        Runnable preview = () -> {
+            String p = first.getText().trim(), n = last.getText().trim();
+            hint.setText(p.isEmpty() || n.isEmpty()
+                    ? "Account: firstname.lastname@cms.ma"
+                    : "Account: " + ChantierDAO.emailPour(p, n));
+        };
+        first.textProperty().addListener((o, a, b) -> preview.run());
+        last.textProperty().addListener((o, a, b) -> preview.run());
+
+        Button cancel = new Button("Cancel");
+        Button assign = new Button("Assign chef");
+        // copy the styleClass of the Cancel / Create buttons of add-project.fxml here:
+        // cancel.getStyleClass().add("..."); assign.getStyleClass().add("...");
+        HBox buttons = new HBox(10, cancel, assign);
+        buttons.setAlignment(Pos.CENTER_RIGHT);
+
+        cancel.setOnAction(e -> hidePopup());            // the method your X button calls
+
+        assign.setOnAction(e -> {
+            String p = first.getText().trim(), n = last.getText().trim(), m = pass.getText();
+            if (p.isEmpty() || n.isEmpty() || m.isEmpty()) {
+                error.setText("Fill the first name, last name and password."); return;
+            }
+            if (m.length() < 6) {
+                error.setText("The password must have at least 6 characters."); return;
+            }
+            String email = ChantierDAO.emailPour(p, n);
+            if (email.startsWith(".") || email.contains("..") || email.startsWith("@")) {
+                error.setText("The name must contain letters or digits."); return;
+            }
+
+            assign.setDisable(true);
+            String statut = ChantierDAO.statutPour(c.debut(), c.fin());
+            Task<Void> task = new Task<>() {
+                @Override protected Void call() throws Exception {
+                    new ChantierDAO().assignerChef(c.id(), p, n, m, statut);
+                    return null;
+                }
+            };
+            task.setOnSucceeded(ev -> { hidePopup(); loadProjects(); });
+            task.setOnFailed(ev -> {
+                assign.setDisable(false);
+                Throwable t = task.getException();
+                error.setText(t instanceof SQLException s && "23505".equals(s.getSQLState())
+                        ? "A chef with this name already exists (" + email + ")."
+                        : "Error: " + t.getMessage());
+            });
+            new Thread(task).start();
+        });
+
+        VBox form = new VBox(12, new Label("Chef de projet"), names, pass, hint, error, buttons);
+        showPopup("Assign a chef to " + c.nom(), true, form);
     }
     private void makeClickable(VBox card, ChantierDAO.Card data) {
         card.getStyleClass().add("clickable");              // the hover style is in dashboard.css

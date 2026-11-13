@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.PasswordField?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.FSA.AddProjectController" styleClass="form-box">
@@ -41,8 +42,13 @@
     </HBox>
 
     <VBox styleClass="form-field">
-        <Label text="Chef de projet" styleClass="form-label"/>
-        <ComboBox fx:id="chefBox" promptText="Choose a chef" maxWidth="Infinity"/>
+        <Label text="Chef de projet (optional)" styleClass="form-label"/>
+        <HBox spacing="10">
+            <TextField fx:id="firstNameField" promptText="First name" HBox.hgrow="ALWAYS" styleClass="form-input"/>
+            <TextField fx:id="lastNameField"  promptText="Last name"  HBox.hgrow="ALWAYS" styleClass="form-input"/>
+        </HBox>
+        <PasswordField fx:id="passwordField" promptText="Password (min. 6 characters)" styleClass="form-input"/>
+        <Label fx:id="emailPreview" text="Leave empty: the project will wait for a chef" styleClass="form-hint"/>
     </VBox>
 
     <VBox styleClass="form-field">

@@ -575,3 +575,5 @@
     -fx-pref-width: 48em;   -fx-max-width: 48em;
     -fx-pref-height: 46em;  -fx-max-height: 46em;
 }
+.form-hint { -fx-font-size: 0.8em; -fx-text-fill: #6b7280; }
+.dark .form-hint { -fx-text-fill: #9ca3af; }

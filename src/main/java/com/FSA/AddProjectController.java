@@ -18,6 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import javafx.scene.control.PasswordField;
 
 public class AddProjectController {
 
@@ -26,13 +27,15 @@ public class AddProjectController {
     @FXML private TextField budgetField;
     @FXML private DatePicker startPicker;
     @FXML private DatePicker endPicker;
-    @FXML private ComboBox<ChantierDAO.ChefOption> chefBox;
     @FXML private Button chooseImageButton;
     @FXML private Label imageName;
     @FXML private ImageView preview;
     @FXML private Label errorLabel;
     @FXML private Button cancelButton;
     @FXML private Button createButton;
+    @FXML private TextField firstNameField, lastNameField;
+    @FXML private PasswordField passwordField;
+    @FXML private Label emailPreview;
 
     private final ChantierDAO dao = new ChantierDAO();
     private File chosenImage;
@@ -50,31 +53,20 @@ public class AddProjectController {
         chooseImageButton.setOnAction(e -> chooseImage());
         cancelButton.setOnAction(e -> onCancel.run());
         createButton.setOnAction(e -> create());
-        loadChefs();
+        firstNameField.textProperty().addListener((o, a, b) -> updateEmailPreview());
+        lastNameField.textProperty().addListener((o, a, b) -> updateEmailPreview());
     }
 
-    // ---------------- chefs ----------------
-
-    private void loadChefs() {
-        Task<List<ChantierDAO.ChefOption>> task = new Task<>() {
-            @Override protected List<ChantierDAO.ChefOption> call() throws Exception {
-                return dao.chefsDisponibles();
-            }
-        };
-        task.setOnSucceeded(e -> {
-            chefBox.getItems().setAll(task.getValue());
-            chefsAvailable = !task.getValue().isEmpty();
-            if (!chefsAvailable) {
-                chefBox.setDisable(true);
-                chefBox.setPromptText("All chefs are busy: the project will wait for a chef");
-            }
-        });
-        task.setOnFailed(e -> showError(explain(task.getException())));
-        run(task);
-    }
 
     // ---------------- image ----------------
-
+    private void updateEmailPreview() {
+        String p = firstNameField.getText().trim(), n = lastNameField.getText().trim();
+        if (p.isEmpty() || n.isEmpty()) {
+            emailPreview.setText("Leave empty: the project will wait for a chef");
+        } else {
+            emailPreview.setText("Account: " + ChantierDAO.emailPour(p, n));
+        }
+    }
     private void chooseImage() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Choose a project image");
@@ -99,12 +91,13 @@ public class AddProjectController {
 
     private void create() {
         hideError();
-
+        String prenom = firstNameField.getText().trim();
+        String nomChef = lastNameField.getText().trim();
+        String mdp = passwordField.getText();
         String nom = nameField.getText().trim();
         String adresse = locationField.getText().trim();
         LocalDate debut = startPicker.getValue();
         LocalDate fin = endPicker.getValue();
-        ChantierDAO.ChefOption chef = chefBox.getValue();
         BigDecimal budget = parseBudget(budgetField.getText());
 
         if (nom.isEmpty())                 { showError("Give the project a name."); return; }
@@ -117,19 +110,39 @@ public class AddProjectController {
         { showError("The budget is too big."); return; }
         if (debut == null || fin == null)  { showError("Choose the start and finish dates."); return; }
         if (fin.isBefore(debut))           { showError("The finish date must be after the start date."); return; }
-        if (chef == null && chefsAvailable) { showError("Choose the chef who will run the project."); return; }
+
+        // ---- NEW: chef account (all three fields, or none) ----
+        boolean wantsChef = !prenom.isEmpty() || !nomChef.isEmpty() || !mdp.isEmpty();
+        if (wantsChef) {
+            if (prenom.isEmpty() || nomChef.isEmpty() || mdp.isEmpty()) {
+                showError("Fill the first name, last name and password, or leave all three empty.");
+                return;
+            }
+            if (mdp.length() < 6) {
+                showError("The password must have at least 6 characters.");
+                return;
+            }
+            String email = ChantierDAO.emailPour(prenom, nomChef);
+            if (email.startsWith(".") || email.contains("..") || email.startsWith("@")) {
+                showError("The name must contain letters or digits.");
+                return;
+            }
+        }
+        // ---- end NEW ----
 
         File imageFile = chosenImage;
         createButton.setDisable(true);
-        Integer chefId = chef == null ? null : chef.id();
-        String statut = chef == null
-                ? ChantierDAO.PLANIFIE                                   // no chef yet: waits in Scheduled
-                : ChantierDAO.statutPour(debut, fin);                    // otherwise by the dates, as before
-        // copying the image and the INSERT can take time: do them in the background
+        String statut = wantsChef
+                ? ChantierDAO.statutPour(debut, fin)                     // chef given: by the dates
+                : ChantierDAO.PLANIFIE;                                  // no chef: waits in Scheduled
+        String chefPrenom = wantsChef ? prenom : null;
+        String chefNom    = wantsChef ? nomChef : null;
+        String chefMdp    = wantsChef ? mdp : null;
+
         Task<Void> task = new Task<>() {
             @Override protected Void call() throws Exception {
                 String saved = imageFile == null ? null : ImageStore.save(imageFile);
-                dao.ajouter(nom, adresse, debut, fin, statut, chefId, budget, saved);
+                dao.ajouter(nom, adresse, debut, fin, statut, chefPrenom, chefNom, chefMdp, budget, saved);
                 return null;
             }
         };
@@ -153,6 +166,11 @@ public class AddProjectController {
 
     private String explain(Throwable t) {
         if (t instanceof SQLException sql) {
+            if ("23505".equals(sql.getSQLState())) {                       // NEW
+                return "A chef with this name already exists ("
+                        + ChantierDAO.emailPour(firstNameField.getText(), lastNameField.getText())
+                        + "). Use a different name.";
+            }
             if ("23502".equals(sql.getSQLState())) {
                 return sql.getMessage().contains("idChefProjet")
                         ? "Run the ALTER TABLE that allows a project without a chef."
