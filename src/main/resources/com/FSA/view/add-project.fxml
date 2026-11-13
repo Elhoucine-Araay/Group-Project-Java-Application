@@ -65,7 +65,7 @@
            visible="false" managed="false"/>
 
     <HBox styleClass="form-row" alignment="CENTER_RIGHT">
-        <Button fx:id="cancelButton" text="Cancel" styleClass="form-cancel"/>
-        <Button fx:id="createButton" text="Create project" styleClass="add-btn"/>
+        <Button fx:id="cancelButton" text="Cancel" styleClass="btn-secondary"/>
+        <Button fx:id="createButton" text="Create project" styleClass="btn-primary"/>
     </HBox>
 </VBox>

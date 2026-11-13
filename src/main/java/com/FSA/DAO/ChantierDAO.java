@@ -90,6 +90,45 @@ public class ChantierDAO {
             }
         }
     }
+    public record ChefOption(int id, String nom) {
+        @Override public String toString() { return nom; }   // shown in the ComboBox
+    }
+
+    /** Project chefs who don't run a project yet. */
+    public List<ChefOption> chefsDisponibles() throws SQLException {
+        String sql = """
+        SELECT u."idUtilisateur", u.nom
+        FROM public.chef_projet cp
+        JOIN public.utilisateur u ON u."idUtilisateur" = cp."idUtilisateur"
+        WHERE NOT EXISTS (SELECT 1 FROM public.chantier c
+                          WHERE c."idChefProjet" = cp."idUtilisateur")
+        ORDER BY u.nom
+        """;
+        List<ChefOption> out = new ArrayList<>();
+        try (Connection cn = DatabaseConnection.getConnection();
+             PreparedStatement st = cn.prepareStatement(sql);
+             ResultSet rs = st.executeQuery()) {
+            while (rs.next()) out.add(new ChefOption(rs.getInt(1), rs.getString(2)));
+        }
+        return out;
+    }
+
+    public void assignerChefExistant(int idChantier, int idChef, String statut) throws SQLException {
+        String sql = """
+        UPDATE public.chantier
+        SET "idChefProjet" = ?, statut = ?
+        WHERE "idChantier" = ? AND "idChefProjet" IS NULL
+        """;
+        try (Connection cn = DatabaseConnection.getConnection();
+             PreparedStatement st = cn.prepareStatement(sql)) {
+            st.setInt(1, idChef);
+            st.setString(2, statut);
+            st.setInt(3, idChantier);
+            if (st.executeUpdate() != 1) {
+                throw new SQLException("This project already has a chef.");
+            }
+        }
+    }
     /** What the project pop-up shows. Loaded when a card is clicked. */
     public Details details(int idChantier) throws SQLException {
         BigDecimal budget = BigDecimal.ZERO;

@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -20,6 +21,8 @@ import javafx.animation.FadeTransition;
 import com.FSA.DAO.ChantierDAO;
 import javafx.scene.control.PasswordField;
 import java.sql.SQLException;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -224,6 +227,29 @@ public class DashboardController {
     }
 
     private void openAssignPopup(ChantierDAO.Card c) {
+        // ---- the two tabs ----
+        ToggleButton existingTab = new ToggleButton("Existing chef");
+        ToggleButton newTab = new ToggleButton("New chef");
+        existingTab.getStyleClass().addAll("seg", "seg-left");
+        newTab.getStyleClass().addAll("seg", "seg-right");
+        ToggleGroup group = new ToggleGroup();
+        existingTab.setToggleGroup(group);
+        newTab.setToggleGroup(group);
+        existingTab.setSelected(true);
+        group.selectedToggleProperty().addListener((o, old, now) -> {
+            if (now == null) old.setSelected(true);          // one tab is always selected
+        });
+        HBox tabs = new HBox(existingTab, newTab);
+
+        // ---- tab 1: a chef that is already in the database ----
+        ComboBox<ChantierDAO.ChefOption> chefBox = new ComboBox<>();
+        chefBox.setMaxWidth(Double.MAX_VALUE);
+        chefBox.setPromptText("Loading chefs...");
+        Label existingHint = new Label("Only chefs who don't run a project yet are listed.");
+        existingHint.getStyleClass().add("form-hint");
+        VBox existingPane = new VBox(8, chefBox, existingHint);
+
+        // ---- tab 2: create a new chef ----
         TextField first = new TextField();
         first.setPromptText("First name");
         TextField last = new TextField();
@@ -231,15 +257,11 @@ public class DashboardController {
         HBox names = new HBox(10, first, last);
         HBox.setHgrow(first, Priority.ALWAYS);
         HBox.setHgrow(last, Priority.ALWAYS);
-
         PasswordField pass = new PasswordField();
         pass.setPromptText("Password (min. 6 characters)");
-
         Label hint = new Label("Account: firstname.lastname@cms.ma");
         hint.getStyleClass().add("form-hint");
-        Label error = new Label();
-        error.setStyle("-fx-text-fill: #dc2626;");
-        error.setWrapText(true);
+        VBox newPane = new VBox(10, names, pass, hint);
 
         Runnable preview = () -> {
             String p = first.getText().trim(), n = last.getText().trim();
@@ -250,48 +272,93 @@ public class DashboardController {
         first.textProperty().addListener((o, a, b) -> preview.run());
         last.textProperty().addListener((o, a, b) -> preview.run());
 
+        // show only the pane of the selected tab
+        existingPane.visibleProperty().bind(existingTab.selectedProperty());
+        existingPane.managedProperty().bind(existingPane.visibleProperty());
+        newPane.visibleProperty().bind(newTab.selectedProperty());
+        newPane.managedProperty().bind(newPane.visibleProperty());
+
+        Label error = new Label();
+        error.setStyle("-fx-text-fill: #dc2626;");
+        error.setWrapText(true);
+
         Button cancel = new Button("Cancel");
+        cancel.getStyleClass().add("btn-secondary");
         Button assign = new Button("Assign chef");
-        // copy the styleClass of the Cancel / Create buttons of add-project.fxml here:
-        // cancel.getStyleClass().add("..."); assign.getStyleClass().add("...");
+        assign.getStyleClass().add("btn-primary");
         HBox buttons = new HBox(10, cancel, assign);
         buttons.setAlignment(Pos.CENTER_RIGHT);
+        cancel.setOnAction(e -> hidePopup());
 
-        cancel.setOnAction(e -> hidePopup());            // the method your X button calls
+        // ---- load the free chefs in the background ----
+        Task<List<ChantierDAO.ChefOption>> load = new Task<>() {
+            @Override protected List<ChantierDAO.ChefOption> call() throws Exception {
+                return chantierDAO.chefsDisponibles();
+            }
+        };
+        load.setOnSucceeded(e -> {
+            List<ChantierDAO.ChefOption> chefs = load.getValue();
+            if (chefs.isEmpty()) {
+                existingTab.setDisable(true);                // nobody to choose from
+                newTab.setSelected(true);
+                existingHint.setText("No free chef: create a new one.");
+            } else {
+                chefBox.getItems().setAll(chefs);
+                chefBox.setPromptText("Choose a chef");
+            }
+        });
+        load.setOnFailed(e -> error.setText("Could not load the chefs: " + load.getException().getMessage()));
+        new Thread(load).start();
 
+        // ---- the Assign button ----
         assign.setOnAction(e -> {
-            String p = first.getText().trim(), n = last.getText().trim(), m = pass.getText();
-            if (p.isEmpty() || n.isEmpty() || m.isEmpty()) {
-                error.setText("Fill the first name, last name and password."); return;
-            }
-            if (m.length() < 6) {
-                error.setText("The password must have at least 6 characters."); return;
-            }
-            String email = ChantierDAO.emailPour(p, n);
-            if (email.startsWith(".") || email.contains("..") || email.startsWith("@")) {
-                error.setText("The name must contain letters or digits."); return;
+            error.setText("");
+            String statut = ChantierDAO.statutPour(c.debut(), c.fin());
+            Task<Void> task;
+
+            if (existingTab.isSelected()) {
+                ChantierDAO.ChefOption chosen = chefBox.getValue();
+                if (chosen == null) { error.setText("Choose a chef."); return; }
+                task = new Task<>() {
+                    @Override protected Void call() throws Exception {
+                        chantierDAO.assignerChefExistant(c.id(), chosen.id(), statut);
+                        return null;
+                    }
+                };
+            } else {
+                String p = first.getText().trim(), n = last.getText().trim(), m = pass.getText();
+                if (p.isEmpty() || n.isEmpty() || m.isEmpty()) {
+                    error.setText("Fill the first name, last name and password."); return;
+                }
+                if (m.length() < 6) {
+                    error.setText("The password must have at least 6 characters."); return;
+                }
+                String email = ChantierDAO.emailPour(p, n);
+                if (email.startsWith(".") || email.contains("..") || email.startsWith("@")) {
+                    error.setText("The name must contain letters or digits."); return;
+                }
+                task = new Task<>() {
+                    @Override protected Void call() throws Exception {
+                        chantierDAO.assignerChef(c.id(), p, n, m, statut);
+                        return null;
+                    }
+                };
             }
 
             assign.setDisable(true);
-            String statut = ChantierDAO.statutPour(c.debut(), c.fin());
-            Task<Void> task = new Task<>() {
-                @Override protected Void call() throws Exception {
-                    new ChantierDAO().assignerChef(c.id(), p, n, m, statut);
-                    return null;
-                }
-            };
-            task.setOnSucceeded(ev -> { hidePopup(); loadProjects(); });
-            task.setOnFailed(ev -> {
+            Task<Void> running = task;
+            running.setOnSucceeded(ev -> { hidePopup(); loadProjects(); });
+            running.setOnFailed(ev -> {
                 assign.setDisable(false);
-                Throwable t = task.getException();
+                Throwable t = running.getException();
                 error.setText(t instanceof SQLException s && "23505".equals(s.getSQLState())
-                        ? "A chef with this name already exists (" + email + ")."
+                        ? "This chef (or this email) is already used by another project."
                         : "Error: " + t.getMessage());
             });
-            new Thread(task).start();
+            new Thread(running).start();
         });
 
-        VBox form = new VBox(12, new Label("Chef de projet"), names, pass, hint, error, buttons);
+        VBox form = new VBox(14, new Label("Chef de projet"), tabs, existingPane, newPane, error, buttons);
         showPopup("Assign a chef to " + c.nom(), true, form);
     }
     private void makeClickable(VBox card, ChantierDAO.Card data) {

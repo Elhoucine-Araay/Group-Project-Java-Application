@@ -577,3 +577,45 @@
 }
 .form-hint { -fx-font-size: 0.8em; -fx-text-fill: #6b7280; }
 .dark .form-hint { -fx-text-fill: #9ca3af; }
+/* ---- buttons ---- */
+.btn-primary {
+    -fx-background-color: #6d5df6;
+    -fx-background-radius: 0.7em;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 0.9em;
+    -fx-padding: 0.6em 1.4em 0.6em 1.4em;
+    -fx-cursor: hand;
+}
+.btn-primary:hover    { -fx-background-color: #5b4be0; }
+.btn-primary:pressed  { -fx-background-color: #4c3ec4; }
+.btn-primary:disabled { -fx-opacity: 0.55; }
+
+.btn-secondary {
+    -fx-background-color: transparent;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 0.7em;
+    -fx-background-radius: 0.7em;
+    -fx-text-fill: #374151;
+    -fx-font-size: 0.9em;
+    -fx-padding: 0.6em 1.4em 0.6em 1.4em;
+    -fx-cursor: hand;
+}
+.btn-secondary:hover { -fx-background-color: #eef0f7; }
+.dark .btn-secondary { -fx-border-color: #4b5563; -fx-text-fill: #e5e7eb; }
+.dark .btn-secondary:hover { -fx-background-color: #2a2f45; }
+
+/* ---- the two tabs (segmented switch) ---- */
+.seg {
+    -fx-background-color: transparent;
+    -fx-border-color: #d1d5db;
+    -fx-text-fill: #374151;
+    -fx-font-size: 0.9em;
+    -fx-padding: 0.5em 1.2em 0.5em 1.2em;
+    -fx-cursor: hand;
+}
+.seg-left  { -fx-background-radius: 0.7em 0 0 0.7em; -fx-border-radius: 0.7em 0 0 0.7em; }
+.seg-right { -fx-background-radius: 0 0.7em 0.7em 0; -fx-border-radius: 0 0.7em 0.7em 0; -fx-border-width: 1 1 1 0; }
+.seg:selected { -fx-background-color: #6d5df6; -fx-border-color: #6d5df6; -fx-text-fill: white; -fx-font-weight: bold; }
+.dark .seg { -fx-border-color: #4b5563; -fx-text-fill: #e5e7eb; }
+.dark .seg:selected { -fx-background-color: #6d5df6; -fx-border-color: #6d5df6; -fx-text-fill: white; }
