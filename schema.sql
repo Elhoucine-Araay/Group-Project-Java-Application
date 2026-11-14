@@ -551,6 +551,19 @@ ALTER TABLE public.affectation
     ADD COLUMN "quantitePrevue"   double precision NOT NULL DEFAULT 0,
     ADD COLUMN "quantiteUtilisee" double precision NOT NULL DEFAULT 0;
 ALTER TABLE public.chantier ALTER COLUMN "idChefProjet" DROP NOT NULL;
+
+CREATE TABLE public.demande (
+    "idDemande"   integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    type          varchar(20) NOT NULL CHECK (type IN ('BUDGET', 'MATERIEL')),
+    "idChantier"  integer     NOT NULL REFERENCES public.chantier("idChantier") ON DELETE CASCADE,
+    "idMateriel"  integer     REFERENCES public.materiel("idMateriel"),
+    montant       numeric(14,2),
+    quantite      double precision,
+    motif         varchar(255),
+    statut        varchar(20) NOT NULL DEFAULT 'EN_ATTENTE'
+                  CHECK (statut IN ('EN_ATTENTE', 'APPROUVEE', 'REFUSEE')),
+    "dateDemande" timestamp   NOT NULL DEFAULT now()
+);
 -- Completed on 2026-11-03 09:54:28
 
 --

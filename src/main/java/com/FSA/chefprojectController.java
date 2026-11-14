@@ -13,6 +13,16 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import com.FSA.DAO.ChefDashboardDAO;
+import javafx.concurrent.Task;
+import com.FSA.DAO.ChefActionsDAO;
+import com.FSA.DAO.ChefDashboardDAO;
+import java.math.BigDecimal;
+import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ScrollPane;
 //--popup
 import javafx.animation.FadeTransition;
 import javafx.scene.Node;
@@ -90,7 +100,6 @@ public class chefprojectController {
         equipmentCard.setOnMouseClicked(e -> openEquipmentPopup());
         budgetCard.setOnMouseClicked(e -> openBudgetPopup());
 
-        loadSampleData();
         //popup
         popupClose.setOnAction(e -> hidePopup());            // the X button closes it
         popupLayer.setOnMouseClicked(e -> hidePopup());      // a click on the dark background closes it
@@ -108,6 +117,7 @@ public class chefprojectController {
     private void showPopup(String title, Node... content) {
         popupTitle.setText(title);
         popupContent.getChildren().setAll(content);
+        if (popupLayer.isVisible() && popupLayer.getOpacity() > 0.5) return;   // already open
 
         popupLayer.setOpacity(0);
         popupLayer.setVisible(true);
@@ -124,45 +134,269 @@ public class chefprojectController {
     }
     // build and show your pop-ups in these 4 methods
     private void openAttendancePopup() {
-        Label info = new Label("Here you can show the attendance details.");
-        showPopup("Attendance", info);
+        if (current == null) { noProject("Attendance"); return; }
+        int idChantier = current.projet().id();
+        Label error = errorLabel();
+
+        // one row per member: the name and a status you can change
+        VBox list = new VBox(8);
+        for (ChefDashboardDAO.Worker w : current.ouvriers()) {
+            Label name = new Label(w.nom());
+            name.getStyleClass().add("row-name");
+            ComboBox<String> status = statusBox(w.statut(), "Present", "Absent", "Late");
+            status.setOnAction(e -> {
+                if (status.getValue().equals(w.statut())) return;
+                save(() -> actions.changerPresence(w.id(), status.getValue()),
+                        error, null, this::openAttendancePopup);
+            });
+            HBox row = new HBox(10, name, grow(), status);
+            row.setAlignment(Pos.CENTER_LEFT);
+            list.getChildren().add(row);
+        }
+        if (current.ouvriers().isEmpty()) emptyRow(list, "No members yet.");
+
+        // add a member
+        TextField nameField = new TextField();
+        nameField.setPromptText("Full name");
+        HBox.setHgrow(nameField, Priority.ALWAYS);
+        ComboBox<String> newStatus = statusBox("Present", "Present", "Absent", "Late");
+        Button add = primaryButton("Add member");
+        add.setOnAction(e -> {
+            error.setText("");
+            String n = nameField.getText().trim();
+            if (n.isEmpty())      { error.setText("Type the name of the member."); return; }
+            if (n.length() > 150) { error.setText("The name is too long."); return; }
+            String st = newStatus.getValue();
+            save(() -> actions.ajouterOuvrier(idChantier, n, st), error, add, this::openAttendancePopup);
+        });
+
+        showPopup("Attendance", scroll(list), sectionTitle("Add a member"),
+                new HBox(10, nameField, newStatus, add), error);
     }
 
     private void openBudgetPopup() {
+        if (current == null) { noProject("Budget Status"); return; }
+        int idChantier = current.projet().id();
+        Label error = errorLabel();
+
+        TextField amount = new TextField();
+        amount.setPromptText("Extra amount in DH, e.g. 50000");
+        TextField reason = new TextField();
+        reason.setPromptText("Why do you need it?");
+        Button send = primaryButton("Request more budget");
+        send.setOnAction(e -> {
+            error.setText("");
+            BigDecimal value = parseNumber(amount.getText());
+            String why = reason.getText().trim();
+            if (value == null || value.signum() <= 0) { error.setText("The amount must be a number above 0."); return; }
+            if (value.compareTo(new BigDecimal("999999999999")) > 0) { error.setText("The amount is too big."); return; }
+            if (why.isEmpty())      { error.setText("Tell why you need more budget."); return; }
+            if (why.length() > 255) { error.setText("The reason is too long (255 characters maximum)."); return; }
+            save(() -> actions.demanderBudget(idChantier, value, why), error, send, this::openBudgetPopup);
+        });
+
+        VBox history = new VBox(6);
+        fillHistory("BUDGET", history, idChantier);
+
         showPopup("Budget Status",
                 new Label("Total: " + totalBudgetLabel.getText()),
                 new Label("Spent: " + spentLabel.getText()),
-                new Label("Remaining: " + remainingLabel.getText()));
+                new Label("Remaining: " + remainingLabel.getText()),
+                sectionTitle("Request more budget"), amount, reason, send, error,
+                sectionTitle("Your requests"), scroll(history));
     }
-    private void openMaterialsPopup()  { /* TODO */ }
-    private void openEquipmentPopup()  { /* TODO */ }
+
+    private void openMaterialsPopup() {
+        if (current == null) { noProject("Materials Inventory"); return; }
+        int idChantier = current.projet().id();
+        Label error = errorLabel();
+
+        ComboBox<ChefActionsDAO.MaterielOption> material = new ComboBox<>();
+        material.setMaxWidth(Double.MAX_VALUE);
+        material.setPromptText("Loading materials...");
+        TextField quantity = new TextField();
+        quantity.setPromptText("Quantity");
+        TextField reason = new TextField();
+        reason.setPromptText("Why do you need it?");
+        Button send = primaryButton("Request material");
+
+        Task<List<ChefActionsDAO.MaterielOption>> load = new Task<>() {
+            @Override protected List<ChefActionsDAO.MaterielOption> call() throws Exception {
+                return actions.materielsCatalogue();
+            }
+        };
+        load.setOnSucceeded(e -> {
+            material.getItems().setAll(load.getValue());
+            material.setPromptText(load.getValue().isEmpty() ? "No material in the database yet" : "Choose a material");
+        });
+        load.setOnFailed(e -> error.setText("Could not load the materials: " + load.getException().getMessage()));
+        background(load);
+
+        send.setOnAction(e -> {
+            error.setText("");
+            ChefActionsDAO.MaterielOption chosen = material.getValue();
+            BigDecimal q = parseNumber(quantity.getText());
+            String why = reason.getText().trim();
+            if (chosen == null)                  { error.setText("Choose a material."); return; }
+            if (q == null || q.signum() <= 0)    { error.setText("The quantity must be a number above 0."); return; }
+            if (q.compareTo(new BigDecimal("1000000000")) > 0) { error.setText("The quantity is too big."); return; }
+            if (why.isEmpty())                   { error.setText("Tell why you need it."); return; }
+            if (why.length() > 255)              { error.setText("The reason is too long (255 characters maximum)."); return; }
+            save(() -> actions.demanderMateriel(idChantier, chosen.id(), q.doubleValue(), why),
+                    error, send, this::openMaterialsPopup);
+        });
+
+        VBox history = new VBox(6);
+        fillHistory("MATERIEL", history, idChantier);
+
+        showPopup("Materials Inventory",
+                sectionTitle("Request more material"), material, quantity, reason, send, error,
+                sectionTitle("Your requests"), scroll(history));
+    }
+
+    private void openEquipmentPopup() {
+        if (current == null) { noProject("Equipment Status"); return; }
+        int idChantier = current.projet().id();
+        Label error = errorLabel();
+        String[] states = {"Operational", "Maintenance", "Idle", "Broken"};
+
+        // one row per machine: the name and a status you can change
+        VBox list = new VBox(8);
+        for (ChefDashboardDAO.Equipment q : current.machines()) {
+            Label name = new Label(q.nom());
+            name.getStyleClass().add("row-name");
+            ComboBox<String> status = statusBox(q.statut(), states);
+            status.setOnAction(e -> {
+                if (status.getValue().equals(q.statut())) return;
+                save(() -> actions.changerEtatMachine(q.id(), status.getValue()),
+                        error, null, this::openEquipmentPopup);
+            });
+            HBox row = new HBox(10, name, grow(), status);
+            row.setAlignment(Pos.CENTER_LEFT);
+            list.getChildren().add(row);
+        }
+        if (current.machines().isEmpty()) emptyRow(list, "No machines yet.");
+
+        // add a machine
+        TextField nameField = new TextField();
+        nameField.setPromptText("Machine name");
+        HBox.setHgrow(nameField, Priority.ALWAYS);
+        TextField typeField = new TextField();
+        typeField.setPromptText("Type (optional)");
+        ComboBox<String> newStatus = statusBox("Operational", states);
+        Button add = primaryButton("Add machine");
+        add.setOnAction(e -> {
+            error.setText("");
+            String n = nameField.getText().trim();
+            String type = typeField.getText().trim();
+            if (n.isEmpty())      { error.setText("Type the name of the machine."); return; }
+            if (n.length() > 100 || type.length() > 100) { error.setText("The text is too long (100 characters maximum)."); return; }
+            String st = newStatus.getValue();
+            save(() -> actions.ajouterMachine(idChantier, n, type.isEmpty() ? null : type, st),
+                    error, add, this::openEquipmentPopup);
+        });
+
+        showPopup("Equipment Status", scroll(list), sectionTitle("Add a machine"),
+                new HBox(10, nameField, typeField), new HBox(10, newStatus, add), error);
+    }
 
     // =====================================================================
     //  DATA: call these with real values from your database / services.
     //  Statuses: Present | Absent | Late          (attendance)
     //            Operational | Maintenance | Idle | Broken   (equipment)
     // =====================================================================
+    private final ChefDashboardDAO dao = new ChefDashboardDAO();
+    private final ChefActionsDAO actions = new ChefActionsDAO();
+    private int chefId;
+    private ChefDashboardDAO.Data current;
+    private interface Job { void run() throws Exception; }
 
-    /** Sample data from the design. Replace with your real data. */
-    private void loadSampleData() {
-        addAttendance("Abdelghafour Agdz", "Present");
-        addAttendance("Elhoucine Araay", "Present");
-        addAttendance("Fatima Zahra Bachkou", "Absent");
-        addAttendance("Achraf nait bourdou", "Absent");
-        addAttendance("Mouhssine Tazrakine", "Late");
-        addAttendance("Abdessamad Bouderqa", "Late");
+    private void background(Task<?> task) {
+        Thread t = new Thread(task);
+        t.setDaemon(true);
+        t.start();
+    }
 
-        addMaterial("Cement", 125, 200, "Tons", "bar-cement");
-        addMaterial("Sand", 50, 100, "Tons", "bar-sand");
-        addMaterial("Steel", 12, 80, "Tons", "bar-steel");
-        addMaterial("Brick", 530, 700, "Tons", "bar-brick");
+    /** Runs a database write in the background, then reloads the page and runs `afterOk`. */
+    private void save(Job job, Label error, Button button, Runnable afterOk) {
+        if (button != null) button.setDisable(true);
+        Task<Void> t = new Task<>() {
+            @Override protected Void call() throws Exception { job.run(); return null; }
+        };
+        t.setOnSucceeded(e -> reload(afterOk));
+        t.setOnFailed(e -> {
+            if (button != null) button.setDisable(false);
+            error.setText("Error: " + t.getException().getMessage());
+        });
+        background(t);
+    }
 
-        addEquipment("Crane", "Operational");
-        addEquipment("Crane", "Maintenance");
-        addEquipment("Crane", "Idle");
-        addEquipment("Crane", "Broken");
+    private Label errorLabel() {
+        Label l = new Label();
+        l.setStyle("-fx-text-fill: #dc2626;");
+        l.setWrapText(true);
+        return l;
+    }
 
-        setBudget(500_000, 320_000);
+    private Label sectionTitle(String text) {
+        Label l = new Label(text);
+        l.setStyle("-fx-font-weight: bold;");
+        return l;
+    }
+
+    private Button primaryButton(String text) {
+        Button b = new Button(text);
+        b.getStyleClass().add("btn-primary");
+        return b;
+    }
+
+    private ComboBox<String> statusBox(String selected, String... items) {
+        ComboBox<String> box = new ComboBox<>(FXCollections.observableArrayList(items));
+        box.setValue(selected);
+        return box;
+    }
+
+    private ScrollPane scroll(Node content) {
+        ScrollPane sp = new ScrollPane(content);
+        sp.setFitToWidth(true);
+        sp.setPrefViewportHeight(240);
+        sp.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+        return sp;
+    }
+
+    private void noProject(String title) {
+        showPopup(title, new Label("No project is assigned to you yet."));
+    }
+
+    private BigDecimal parseNumber(String text) {
+        try {
+            return new BigDecimal(text.trim().replace(",", "").replace(" ", ""));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /** Fills `box` with the requests of the project ("BUDGET" or "MATERIEL") and their status. */
+    private void fillHistory(String type, VBox box, int idChantier) {
+        Task<List<ChefActionsDAO.Request>> t = new Task<>() {
+            @Override protected List<ChefActionsDAO.Request> call() throws Exception {
+                return actions.demandes(idChantier, type);
+            }
+        };
+        t.setOnSucceeded(e -> {
+            box.getChildren().clear();
+            for (ChefActionsDAO.Request r : t.getValue()) {
+                Label text = new Label(r.texte());
+                text.setWrapText(true);
+                Label st = new Label(r.statut());
+                st.getStyleClass().add("muted");
+                HBox row = new HBox(10, text, grow(), st);
+                row.setAlignment(Pos.CENTER_LEFT);
+                box.getChildren().add(row);
+            }
+            if (t.getValue().isEmpty()) emptyRow(box, "No requests yet.");
+        });
+        background(t);
     }
 
     /** Changes the profile shown at the top of the sidebar (call it after login). */
@@ -173,6 +407,79 @@ public class chefprojectController {
         String initials = parts[0].substring(0, 1)
                 + (parts.length > 1 ? parts[parts.length - 1].substring(0, 1) : "");
         avatarText.setText(initials.toUpperCase());
+    }
+    /** Called by the login: fills the page with the project of this chef. */
+    public void setChef(int idUtilisateur, String nom, String email) {
+        setUser(nom, email);
+        this.chefId = idUtilisateur;
+        reload(null);
+    }
+
+    private void reload(Runnable after) {
+        Task<ChefDashboardDAO.Data> task = new Task<>() {
+            @Override protected ChefDashboardDAO.Data call() throws Exception {
+                return dao.pourChef(chefId);
+            }
+        };
+        task.setOnSucceeded(e -> {
+            show(task.getValue());
+            if (after != null) after.run();
+        });
+        task.setOnFailed(e -> {
+            task.getException().printStackTrace();
+            clearLists();
+            emptyRow(attendanceList, "Could not load: " + task.getException().getMessage());
+        });
+        background(task);
+    }
+
+    private void show(ChefDashboardDAO.Data d) {
+        current = d;
+        clearLists();
+
+        if (d == null) {                                   // chef without a project
+            setBudget(0, 0);
+            budgetPill.setText("No project");
+            emptyRow(attendanceList, "No project is assigned to you yet.");
+            return;
+        }
+
+        for (ChefDashboardDAO.Worker w : d.ouvriers()) addAttendance(w.nom(), w.statut());
+        if (d.ouvriers().isEmpty()) emptyRow(attendanceList, "No workers assigned yet.");
+
+        String[] colors = {"bar-cement", "bar-sand", "bar-steel", "bar-brick"};
+        int i = 0;
+        for (ChefDashboardDAO.Material m : d.materiaux()) {
+            addMaterial(m.nom(), m.utilisee(), m.prevue(), m.unite(), barClass(m.nom(), colors[i++ % 4]));
+        }
+        if (d.materiaux().isEmpty()) emptyRow(materialsList, "No materials assigned yet.");
+
+        for (ChefDashboardDAO.Equipment q : d.machines()) addEquipment(q.nom(), q.statut());
+        if (d.machines().isEmpty()) emptyRow(equipmentList, "No equipment assigned yet.");
+
+        setBudget(d.projet().budget(), d.projet().depenses());
+    }
+
+    private void clearLists() {
+        attendanceList.getChildren().clear();
+        materialsList.getChildren().clear();
+        equipmentList.getChildren().clear();
+    }
+
+    private void emptyRow(VBox list, String text) {
+        Label l = new Label(text);
+        l.getStyleClass().add("muted");
+        list.getChildren().add(l);
+    }
+
+    /** Cement, sand, steel keep their colour; any other material gets the fallback one. */
+    private String barClass(String name, String fallback) {
+        String n = name == null ? "" : name.toLowerCase(Locale.ROOT);
+        if (n.contains("cement") || n.contains("ciment")) return "bar-cement";
+        if (n.contains("sand") || n.contains("sable"))    return "bar-sand";
+        if (n.contains("steel") || n.contains("acier"))   return "bar-steel";
+        if (n.contains("brick") || n.contains("brique"))  return "bar-brick";
+        return fallback;
     }
 
     public void addAttendance(String name, String status) {

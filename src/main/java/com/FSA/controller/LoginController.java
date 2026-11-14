@@ -1,7 +1,9 @@
 
 package com.FSA.controller;
 
+import com.FSA.DAO.UtilisateurDAO;
 import com.FSA.Navigation;
+import com.FSA.chefprojectController;
 import com.FSA.service.UtilisateurService;
 
 import javafx.beans.binding.Bindings;
@@ -61,18 +63,36 @@ public class LoginController {
         String email = emailField.getText();
         String password = passwordField.getText();
 
-        String role = utilisateurService.authentifier(email, password);
-
-        if (role == null) {
+        UtilisateurDAO.Connexion c = utilisateurService.connecter(email, password);
+        if (c == null) {
             afficherErreur("Email ou mot de passe incorrect.");
             return;
         }
 
-        // Redirect according to role
-        switch (role) {
-            case "CHEF_DEPARTEMENT" -> Navigation.go(root, "dashboard.fxml");
-            case "CHEF_PROJET"      -> Navigation.go(root, "chefproject.fxml");
-            default -> afficherErreur("Rôle utilisateur non reconnu.");
+        if (c.role().equals("CHEF_DEPARTEMENT")) {
+            Navigation.go(root, "dashboard.fxml");
+        } else if (c.role().equals("CHEF_PROJET")) {
+            ouvrirDashboardChef(c);                       // was the "pas encore disponible" error
+        } else {
+            afficherErreur("Rôle utilisateur non reconnu.");
+        }
+    }
+
+    private void ouvrirDashboardChef(UtilisateurDAO.Connexion c) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/FSA/view/chefproject.fxml"));
+            Parent page = loader.load();
+
+            chefprojectController controller = loader.getController();
+            controller.setChef(c.id(), c.nom(), c.email());   // gives the page the logged-in chef
+
+            Stage stage = (Stage) root.getScene().getWindow();
+            stage.setScene(new Scene(page, 1280, 720));
+            stage.setTitle("CS Management");
+        } catch (IOException | NullPointerException e) {
+            afficherErreur("Impossible d'ouvrir le Dashboard.");
+            e.printStackTrace();
         }
     }
 

@@ -24,29 +24,27 @@ public class UtilisateurDAO {
                     "ON u.\"idUtilisateur\" = cp.\"idUtilisateur\" " +
                     "WHERE u.email = ?";
 
-    public String authentifier(String email, String password) {
+    public record Connexion(int id, String nom, String email, String role) {}
 
+    public Connexion connecter(String email, String password) {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_LOGIN)) {
 
             stmt.setString(1, email);
-
             try (ResultSet rs = stmt.executeQuery()) {
-
-                if (rs.next()) {
-
-                    String hashedPassword = rs.getString("motDePasse");
-
-                    if (BCrypt.checkpw(password, hashedPassword)) {
-                        return rs.getString("role");
-                    }
+                if (rs.next() && BCrypt.checkpw(password, rs.getString("motDePasse"))) {
+                    return new Connexion(rs.getInt("idUtilisateur"), rs.getString("nom"),
+                            rs.getString("email"), rs.getString("role"));
                 }
             }
-
         } catch (SQLException | IllegalArgumentException e) {
             e.printStackTrace();
         }
-
         return null;
+    }
+
+    public String authentifier(String email, String password) {   // old one, now short
+        Connexion c = connecter(email, password);
+        return c == null ? null : c.role();
     }
 }

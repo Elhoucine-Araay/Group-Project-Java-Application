@@ -139,12 +139,12 @@
 
          <!-- Navigation -->
          <Button fx:id="dashboardButton" text="Dashboard" maxWidth="Infinity" minWidth="0.0"
-                 styleClass="nav-item">
+                 styleClass="nav-item, nav-active">
             <graphic><Region styleClass="nav-icon, icon-home"/></graphic>
          </Button>
 
          <Button fx:id="projectsButton" text="Projects" maxWidth="Infinity" minWidth="0.0"
-                 styleClass="nav-item, nav-active">
+                 styleClass="nav-item">
             <graphic><Region styleClass="nav-icon, icon-folder"/></graphic>
          </Button>
 
