@@ -219,7 +219,7 @@ public class ChefActionsDAO {
     // =================== shared helpers ===================
 
     /** The default task "General" of the project (created the first time). */
-    private static int tacheGenerale(Connection cn, int idChantier) throws SQLException {
+     static int tacheGenerale(Connection cn, int idChantier) throws SQLException {
         try (PreparedStatement st = cn.prepareStatement(
                 "SELECT \"idTache\" FROM public.tache WHERE \"idChantier\" = ? AND nom = 'General' LIMIT 1")) {
             st.setInt(1, idChantier);

@@ -41,7 +41,7 @@ public class DashboardController {
     // sidebar
     @FXML private Button settingsButton;
     @FXML private Button dashboardButton;
-    @FXML private Button projectsButton;
+    @FXML private Button projectsRButton;
     @FXML private Button notificationsButton;
     @FXML private Button reportsButton;
     @FXML private Button teamButton;
@@ -76,7 +76,7 @@ public class DashboardController {
             showPopup("Settings", info);
         });
         dashboardButton.setOnAction(e -> { /* TODO: already here */ });
-        projectsButton.setOnAction(e -> { /* TODO: go to projects */ });
+        projectsRButton.setOnAction(e -> Navigation.go(root, "requests.fxml"));
         notificationsButton.setOnAction(e -> { /* TODO: go to notifications */ });
         reportsButton.setOnAction(e -> { /* TODO: go to reports */ });
         teamButton.setOnAction(e -> { /* TODO: go to team */ });

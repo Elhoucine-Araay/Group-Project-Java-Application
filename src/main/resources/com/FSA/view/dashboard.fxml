@@ -96,7 +96,7 @@
             <graphic><Region styleClass="nav-icon, icon-home"/></graphic>
          </Button>
 
-         <Button fx:id="projectsButton" text="Projects" maxWidth="Infinity" minWidth="0.0"
+         <Button fx:id="projectsRButton" text="Projects Requests" maxWidth="Infinity" minWidth="0.0"
                  styleClass="nav-item">
             <graphic><Region styleClass="nav-icon, icon-folder"/></graphic>
          </Button>
